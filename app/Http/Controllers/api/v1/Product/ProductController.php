@@ -10,6 +10,7 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @group Product Management
@@ -68,6 +69,14 @@ class ProductController extends Controller
     {
         try {
             $data = $request->validated();
+
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('products', 's3'); // Ordner: products/
+                $url = Storage::disk('s3')->url($path);
+
+                $data['image'] = $url;
+            }
+
             $product = Product::create($data);
 
             return response()->json(new ProductResource($product), 201);
