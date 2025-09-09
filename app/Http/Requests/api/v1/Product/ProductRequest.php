@@ -25,7 +25,7 @@ class ProductRequest extends FormRequest
             'title' => 'required|string',
             'description' => 'required|string',
             'image' => 'required|image',
-            'price' => '', // Optionales Feld, du kannst hier ggf. zusätzliche Regeln ergänzen
+            'price' => 'numeric', // Optionales Feld, du kannst hier ggf. zusätzliche Regeln ergänzen
             'category_id' => 'required|exists:categories,id',
         ];
     }

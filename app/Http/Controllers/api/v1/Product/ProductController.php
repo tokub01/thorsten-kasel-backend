@@ -115,6 +115,8 @@ class ProductController extends Controller
 
             $product->update($data);
 
+            $product->save();
+
             return response()->json(new ProductResource($product), 200);
         } catch (Throwable $e) {
             Log::error('Failed to update product: ' . $e->getMessage());
