@@ -1,8 +1,20 @@
 <?php
 
-namespace App\Http\Responses\api\v1\Category;
 
-class CategoryResource
+
+namespace App\Http\Resources\api\v1\Category;
+
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class CategoryResource extends JsonResource
 {
-
+    public function toArray($request) : array
+    {
+        return [
+            'name' => $this->name,
+        ];
+    }
 }

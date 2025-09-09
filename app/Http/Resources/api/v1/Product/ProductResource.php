@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Responses\api\v1\Product;
+namespace App\Http\Resources\api\v1\Product;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -25,8 +25,9 @@ class ProductResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'price' => $this->price,
+            'category_id' => $this->category_id,
+            'title' => $this->title,
+            'description' => $this->description,
             'image' => $temporaryImageUrl,
         ];
     }

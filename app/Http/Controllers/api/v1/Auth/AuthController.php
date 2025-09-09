@@ -4,14 +4,14 @@ namespace App\Http\Controllers\api\v1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\v1\Auth\LogoutRequest;
-use App\Http\Responses\api\v1\Auth\LogoutResource;
+use App\Http\Resources\api\v1\Auth\LogoutResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\api\v1\Auth\LoginRequest;
-use App\Http\Responses\api\v1\Auth\LoginResource;
+use App\Http\Resources\api\v1\Auth\LoginResource;
 use App\Http\Requests\api\v1\Auth\RegisterRequest;
-use App\Http\Responses\api\v1\Auth\RegisterResource;
+use App\Http\Resources\api\v1\Auth\RegisterResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -29,7 +29,7 @@ class AuthController extends Controller
      *
      * @url POST /api/auth/login
      *
-     * @param \App\Http\Requests\LoginRequest $request The validated login request.
+     * @param \App\Http\Requests\api\v1\Auth\LoginRequest $request The validated login request.
      * @return \Illuminate\Http\JsonResponse JSON response containing success status, user data, and API token.
      *
      * @throws \Illuminate\Validation\ValidationException If the input validation fails.
@@ -62,7 +62,9 @@ class AuthController extends Controller
             ], 401);
         }
 
-        return new JsonResponse(new LoginResource);
+        $user = User::where('email', $credentials['email'])->first();
+
+        return (new LoginResource($user))->toResponse();
     }
 
     /**
@@ -114,7 +116,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return new JsonResponse(new RegisterResource($user, $token));
+        return (new RegisterResource($user, $token))->toResponse($request);
     }
 
     /**
@@ -124,7 +126,7 @@ class AuthController extends Controller
      *
      * @url POST /api/auth/logout
      *
-     * @param LogoutRequest $request
+     * @param LogoutRequest $request9
      * @return \Illuminate\Http\JsonResponse JSON success message on logout.
      *
      * @response 200 {
@@ -143,7 +145,7 @@ class AuthController extends Controller
 
         $user->currentAccessToken()->delete();
 
-        return new JsonResponse(new LogoutResource);
+        return (new LogoutResource)->toResponse($request);
     }
 
 }

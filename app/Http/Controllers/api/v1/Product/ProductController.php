@@ -4,14 +4,14 @@ namespace App\Http\Controllers\api\v1\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\v1\Product\ProductRequest;
-use App\Http\Responses\api\v1\Product\ProductResource;
-use App\Http\Responses\api\v1\Product\ProductResourceCollection;
+use App\Http\Resources\api\v1\Product\ProductResource;
+use App\Http\Resources\api\v1\Product\ProductResourceCollection;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Http\Request;
 /**
  * @group Product Management
  *
@@ -24,11 +24,11 @@ class ProductController extends Controller
      *
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
             $products = Product::all();
-            return response()->json(new ProductResourceCollection($products), 200);
+            return (new ProductResourceCollection($products))->toResponse($request);
         } catch (Throwable $e) {
             Log::error('Failed to fetch products: ' . $e->getMessage());
 
@@ -74,7 +74,7 @@ class ProductController extends Controller
                 $path = $request->file('image')->store('products', 's3'); // Ordner: products/
                 $url = Storage::disk('s3')->url($path);
 
-                $data['image'] = $url;
+                $data['image'] = $path;
             }
 
             $product = Product::create($data);
@@ -101,6 +101,18 @@ class ProductController extends Controller
     {
         try {
             $data = $request->validated();
+
+            if ($request->hasFile('image')) {
+                // Altes Bild löschen, falls vorhanden
+                if ($product->image && Storage::disk('s3')->exists($product->image)) {
+                    Storage::disk('s3')->delete($product->image);
+                }
+
+                // Neues Bild hochladen
+                $path = $request->file('image')->store('products', 's3');
+                $data['image'] = $path;
+            }
+
             $product->update($data);
 
             return response()->json(new ProductResource($product), 200);
@@ -123,6 +135,10 @@ class ProductController extends Controller
     public function destroy(Product $product): JsonResponse
     {
         try {
+            if ($product->image && Storage::disk('s3')->exists($product->image)) {
+                Storage::disk('s3')->delete($product->image);
+            }
+
             $product->delete();
 
             return response()->json([

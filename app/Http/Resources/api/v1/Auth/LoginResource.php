@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Responses\api\v1\Auth;
+namespace App\Http\Resources\api\v1\Auth;
 
 use Illuminate\Support\Facades\Response;
 
@@ -16,16 +16,16 @@ class LoginResource
 
     protected $token;
 
-    public function __construct()
+    public function __construct(User $user)
     {
-        $this->user = Auth::user();
+        $this->user = $user;
 
         $this->user->tokens()->where('name', 'login_token')->delete();
 
         $this->token = $this->user->createToken('login_token')->plainTextToken;
     }
 
-    public function toResponse($request) : JsonResponse
+    public function toResponse() : JsonResponse
     {
         return Response::json([
             'success' => true,

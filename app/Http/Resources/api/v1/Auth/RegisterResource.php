@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Responses\api\v1\Auth;
+namespace App\Http\Resources\api\v1\Auth;
 
 use Illuminate\Contracts\Support\Responsable;
 

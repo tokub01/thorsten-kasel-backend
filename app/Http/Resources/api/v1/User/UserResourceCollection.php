@@ -1,8 +1,8 @@
 <?php
-namespace App\Http\Resources\api\v1\Product;
+namespace App\Http\Resources\api\v1\User;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
-class ProductResourceCollection extends ResourceCollection
+class UserResourceCollection extends ResourceCollection
 {
     public function toArray($request)
     {

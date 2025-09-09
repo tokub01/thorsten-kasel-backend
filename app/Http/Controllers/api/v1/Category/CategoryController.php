@@ -4,12 +4,13 @@ namespace App\Http\Controllers\api\v1\Category;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\v1\Category\CategoryRequest;
-use App\Http\Responses\api\v1\Category\CategoryResource;
-use App\Http\Responses\api\v1\Category\CategoryResourceCollection;
+use App\Http\Resources\api\v1\Category\CategoryResource;
+use App\Http\Resources\api\v1\Category\CategoryResourceCollection;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use Illuminate\Http\Request;
 
 /**
  * @group Category Management
@@ -21,14 +22,14 @@ class CategoryController extends Controller
     /**
      * Display a listing of categories.
      *
-     * @param CategoryRequest $request
+     * @param Request $request
      * @return JsonResponse
      */
-    public function index(CategoryRequest $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
             $categories = Category::all();
-            return response()->json(new CategoryResourceCollection($categories), 200);
+            return (new CategoryResourceCollection($categories))->toResponse($request);
         } catch (Throwable $e) {
             Log::error('Failed to fetch categories: ' . $e->getMessage());
 
@@ -46,10 +47,10 @@ class CategoryController extends Controller
      * @param Category $category
      * @return JsonResponse
      */
-    public function show(CategoryRequest $request, Category $category): JsonResponse
+    public function show(Request $request, Category $category): JsonResponse
     {
         try {
-            return response()->json(new CategoryResource($category), 200);
+            return (new CategoryResource($category))->toResponse($request);
         } catch (Throwable $e) {
             Log::error('Failed to fetch category: ' . $e->getMessage());
 
@@ -72,7 +73,7 @@ class CategoryController extends Controller
             $data = $request->validated();
             $category = Category::create($data);
 
-            return response()->json(new CategoryResource($category), 201);
+            return (new CategoryResource($category))->toResponse($request);
         } catch (Throwable $e) {
             Log::error('Failed to create category: ' . $e->getMessage());
 
@@ -96,7 +97,7 @@ class CategoryController extends Controller
             $data = $request->validated();
             $category->update($data);
 
-            return response()->json(new CategoryResource($category), 200);
+            return (new CategoryResource($category))->toResponse($request);
         } catch (Throwable $e) {
             Log::error('Failed to update category: ' . $e->getMessage());
 
@@ -113,11 +114,9 @@ class CategoryController extends Controller
      * @param CategoryRequest $request
      * @return JsonResponse
      */
-    public function destroy(CategoryRequest $request): JsonResponse
+    public function destroy(Request $request, Category $category): JsonResponse
     {
         try {
-            $categoryId = $request->route('category');
-            $category = Category::findOrFail($categoryId);
             $category->delete();
 
             return response()->json([
