@@ -58,7 +58,7 @@ class AuthController extends Controller
         if (!Auth::attempt($credentials)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Die eingegebenen Zugangsdaten sind ungültig.',
+                'message' => 'Die Anmeldung ist fehlgeschlagen. E-Mail oder Passwort ungültig.',
             ], 401);
         }
 
