@@ -16,7 +16,7 @@ class UserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'], // confirmed prüft password_confirmation
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'biography' => ['nullable', 'string'],
         ];
     }
@@ -24,13 +24,20 @@ class UserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Please provide your name.',
-            'email.required' => 'Please provide your email address.',
-            'email.email' => 'Please provide a valid email address.',
-            'email.unique' => 'This email address is already registered.',
-            'password.required' => 'Please provide a password.',
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
+            'name.required' => 'Bitte gib deinen Namen an.',
+            'name.string' => 'Der Name muss ein Text sein.',
+            'name.max' => 'Der Name darf maximal 255 Zeichen lang sein.',
+
+            'email.required' => 'Bitte gib deine E-Mail-Adresse an.',
+            'email.email' => 'Bitte gib eine gültige E-Mail-Adresse an.',
+            'email.unique' => 'Diese E-Mail-Adresse ist bereits registriert.',
+
+            'password.required' => 'Bitte gib ein Passwort an.',
+            'password.string' => 'Das Passwort muss ein Text sein.',
+            'password.min' => 'Das Passwort muss mindestens 8 Zeichen lang sein.',
+            'password.confirmed' => 'Die Passwortbestätigung stimmt nicht überein.',
+
+            'biography.string' => 'Die Biografie muss ein Text sein.',
         ];
     }
 }

@@ -25,4 +25,17 @@ class CategoryRequest extends FormRequest
             'name' => 'required|string',
         ];
     }
+
+    /**
+     * Get custom validation messages.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Bitte gib einen Namen für die Kategorie an.',
+            'name.string' => 'Der Kategoriename muss ein Text sein.',
+        ];
+    }
 }

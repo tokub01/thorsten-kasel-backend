@@ -25,8 +25,30 @@ class ProductRequest extends FormRequest
             'title' => 'required|string',
             'description' => 'required|string',
             'image' => 'required|image',
-            'price' => '',
+            'price' => '', // Optionales Feld, du kannst hier ggf. zusätzliche Regeln ergänzen
             'category_id' => 'required|exists:categories,id',
+        ];
+    }
+
+    /**
+     * Get custom validation messages.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Bitte gib einen Titel für das Produkt an.',
+            'title.string' => 'Der Titel muss ein Text sein.',
+
+            'description.required' => 'Bitte gib eine Beschreibung für das Produkt an.',
+            'description.string' => 'Die Beschreibung muss ein Text sein.',
+
+            'image.required' => 'Bitte lade ein Produktbild hoch.',
+            'image.image' => 'Die Datei muss ein Bild sein (jpeg, png, bmp, gif, svg, webp).',
+
+            'category_id.required' => 'Bitte wähle eine Kategorie aus.',
+            'category_id.exists' => 'Die gewählte Kategorie ist ungültig.',
         ];
     }
 }
