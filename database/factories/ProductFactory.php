@@ -20,7 +20,7 @@ class ProductFactory extends Factory
         return [
             'title' => fake()->name(),
             'description' => fake()->unique()->text(),
-            'image' => '/test/image.jpg',
+            'image' => 'products/TDkOWw0ffNF2ZZ9FXvqOyCkSmMceaUAeuqdbRnr0.png',
             'category_id' => Category::factory()->create()->id,
         ];
     }

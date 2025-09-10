@@ -139,7 +139,7 @@ class AuthController extends Controller
      *   "message": "Nicht authentifiziert."
      * }
      */
-    public function logout(LogoutRequest $request) : JsonResponse
+    public function logout(Request $request) : JsonResponse
     {
         $user = $request->user();
 
