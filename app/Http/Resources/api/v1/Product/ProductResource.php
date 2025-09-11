@@ -4,6 +4,7 @@ namespace App\Http\Resources\api\v1\Product;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Category;
 
 class ProductResource extends JsonResource
 {
@@ -25,7 +26,7 @@ class ProductResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'category_id' => $this->category_id,
+            'category_id' => Category::find($this->category_id),
             'title' => $this->title,
             'description' => $this->description,
             'image' => $temporaryImageUrl,

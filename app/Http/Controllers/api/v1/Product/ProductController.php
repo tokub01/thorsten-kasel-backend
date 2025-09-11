@@ -27,8 +27,28 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $products = Product::all();
+            $keyword = trim($request->query('keyword', ''));
+            $category = $request->query('category');
+            $sort = $request->query('sort', 'newest'); // Default: neueste zuerst
+
+            $products = Product::query()
+                ->when($keyword !== '', function ($query) use ($keyword) {
+                    $query->where('title', 'like', '%' . $keyword . '%');
+                })
+                ->when(!is_null($category) && $category !== '', function ($query) use ($category) {
+                    $query->where('category_id', $category);
+                })
+                ->when(in_array($sort, ['newest', 'oldest']), function ($query) use ($sort) {
+                    if ($sort === 'newest') {
+                        $query->orderBy('created_at', 'desc');
+                    } else {
+                        $query->orderBy('created_at', 'asc');
+                    }
+                })
+                ->get();
+
             return (new ProductResourceCollection($products))->toResponse($request);
+
         } catch (Throwable $e) {
             Log::error('Failed to fetch products: ' . $e->getMessage());
 
@@ -79,7 +99,7 @@ class ProductController extends Controller
 
             $product = Product::create($data);
 
-            return response()->json(new ProductResource($product), 201);
+            return (new ProductResourceCollection(Product::all()))->toResponse($request);
         } catch (Throwable $e) {
             Log::error('Failed to store product: ' . $e->getMessage());
 
