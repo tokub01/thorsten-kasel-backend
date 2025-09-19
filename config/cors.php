@@ -20,9 +20,12 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'http://localhost',
         'http://localhost:8080',
+        'http://thorstenkasel.de',
         'https://thorstenkasel.de',
         'https://www.thorstenkasel.de',
+        'http://www.thorstenkasel.de'
     ],
 
     'allowed_origins_patterns' => [],
