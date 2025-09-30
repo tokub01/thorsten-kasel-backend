@@ -44,6 +44,14 @@ Route::prefix('categories')
             Route::delete('{category}', 'CategoryController@destroy');
         });
     });
+Route::prefix('contact')
+    ->namespace('App\Http\Controllers\api\v1\Contact')
+    ->group(function () {
+        Route::post('/', 'ContactController@submit');
+        Route::get('/', 'ContactController@getTest');
+
+    });
+
 Route::prefix('users')
     ->namespace('App\Http\Controllers\api\v1\User')
     ->group(function () {
