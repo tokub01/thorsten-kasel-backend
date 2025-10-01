@@ -48,7 +48,7 @@ Route::prefix('contact')
     ->namespace('App\Http\Controllers\api\v1\Contact')
     ->group(function () {
         Route::post('/', 'ContactController@submit');
-        Route::get('/', 'ContactController@getTest');
+        Route::post('/verify', 'ContactController@verify');
 
     });
 
