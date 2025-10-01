@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pending_contact_request', function (Blueprint $table) {
+        Schema::create('pending_contact_requests', function (Blueprint $table) {
             $table->id();
             $table->string('email')->nullable();
             $table->string('name')->nullable();

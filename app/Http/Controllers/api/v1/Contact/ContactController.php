@@ -81,16 +81,26 @@ class ContactController extends Controller
         ], 200);
     }
 
-    public function verify($token)
+    public function verify(Request $request)
     {
+        $token = $request['token'];
+
         $pending = PendingContactRequest::where('token', $token)->first();
 
         if (!$pending) {
-            return 'Ungültiger oder abgelaufener Token.';
+            return response()->json([
+                'success' => false,
+                'message' => "Verifizierungs E-Mail ungültig!",
+                'errors' => '',
+            ], 422);
         }
 
         if ($pending->isVerified) {
-            return 'Nachricht wurde bereits bestätigt.';
+            return response()->json([
+                'success' => false,
+                'message' => "E-Mail bereits erfolgreich verifiziert!",
+                'errors' => '',
+            ], 422);
         }
 
         $pending->update(['isVerified' => true]);
@@ -104,6 +114,10 @@ class ContactController extends Controller
         Mail::to('tobias.kubina@protonmail.com')
             ->send(new ContactMail($pending->name, $pending->email, $pending->message));
 
-        return 'Vielen Dank! Deine Nachricht wurde erfolgreich verifiziert und gesendet.';
+        return response()->json([
+            'success' => true,
+            'message' => "Verifizierungsemail erfolgreich gesendet!",
+            'errors' => '',
+        ]);
     }
 }

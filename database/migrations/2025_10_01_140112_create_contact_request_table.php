@@ -11,8 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('contact_requst', function (Blueprint $table) {
+        Schema::create('contact_requests', function (Blueprint $table) {
             $table->id();
+            $table->string('email')->nullable();
+            $table->string('name')->nullable();
+            $table->string('message')->nullable();
+            $table->string('token')->unique();
+            $table->boolean('isVerified')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
