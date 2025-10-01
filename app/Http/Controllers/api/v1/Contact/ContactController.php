@@ -5,25 +5,36 @@ namespace App\Http\Controllers\api\v1\Contact;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use App\Models\PendingContactRequest;
+use App\Mail\ContactVerificationMail;
+use App\Mail\ContactMail;
+use Illuminate\Support\Facades\Mail;
+use App\Models\ContactRequest;
+use App\Models\User;
 
 class ContactController extends Controller
 {
-    public function getTest(Request $request){
-        return "Hello";
-    }
-
     public function submit(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'message' => 'required|string',
+        $validator = Validator::make($request->all(), [
+            'name'            => 'required|string|max:255',
+            'email'           => 'required|email|max:255',
+            'message'         => 'required|string',
             'recaptcha_token' => 'required|string',
         ]);
 
-        // reCAPTCHA validieren
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validierung fehlgeschlagen',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
         $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret' => env('RECAPTCHA_SECRET_KEY'),
+            'secret'   => env('RECAPTCHA_SECRET_KEY'),
             'response' => $request->input('recaptcha_token'),
             'remoteip' => $request->ip(),
         ]);
@@ -31,16 +42,68 @@ class ContactController extends Controller
         $body = $response->json();
 
         if (!isset($body['success']) || $body['success'] !== true) {
-            return back()->withErrors(['recaptcha' => 'reCAPTCHA Validierung fehlgeschlagen']);
+            return response()->json([
+                'success' => false,
+                'message' => 'reCAPTCHA Validierung fehlgeschlagen',
+                'errors'  => [
+                    'recaptcha' => $body['error-codes'] ?? ['Ungültiger Token'],
+                ],
+            ], 422);
         }
 
-        // Score prüfen (optional, v3)
+        // Score prüfen (für reCAPTCHA v3)
         if (isset($body['score']) && $body['score'] < 0.5) {
-            return back()->withErrors(['recaptcha' => 'Du wurdest als Bot erkannt']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Du wurdest als Bot erkannt',
+                'errors'  => [
+                    'recaptcha' => ['Score zu niedrig (' . $body['score'] . ')'],
+                ],
+            ], 403);
         }
 
-        // Formular weiter verarbeiten
-        // z.B. E-Mail senden oder in DB speichern
-        return back()->with('success', 'Nachricht erfolgreich gesendet!');
+        $token = Str::random(32);
+
+        PendingContactRequest::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'message' => $request->message,
+            'token' => $token,
+        ]);
+
+        $url = route('contact.verify', ['token' => $token]);
+
+        Mail::to($request->email)->send(new ContactVerificationMail($url));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Nachricht erfolgreich gesendet!',
+        ], 200);
+    }
+
+    public function verify($token)
+    {
+        $pending = PendingContactRequest::where('token', $token)->first();
+
+        if (!$pending) {
+            return 'Ungültiger oder abgelaufener Token.';
+        }
+
+        if ($pending->isVerified) {
+            return 'Nachricht wurde bereits bestätigt.';
+        }
+
+        $pending->update(['isVerified' => true]);
+
+        ContactRequest::create([
+            'email' => $pending->email,
+            'name' => $pending->name,
+            'message' => $pending->message,
+        ]);
+
+        Mail::to('tobias.kubina@protonmail.com')
+            ->send(new ContactMail($pending->name, $pending->email, $pending->message));
+
+        return 'Vielen Dank! Deine Nachricht wurde erfolgreich verifiziert und gesendet.';
     }
 }
