@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         User::factory([
            'name' => 'Thorsten Kasel',
            'email' => 'thorsten.kasel@web.de',
-           'password' => 'nfT0CDYjG9p^k0&V^qLFQW9%T^vRkT'
+           'password' => env('ADMIN_PASSWORD'),
         ])->create();
     }
 }
