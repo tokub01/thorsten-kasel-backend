@@ -2,16 +2,130 @@
 
 namespace Database\Seeders;
 
-use App\Models\Product;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Product;
+use App\Models\Category;
+
 class ProductSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        Product::factory()->count(10)->create();
+        $categories = Category::pluck('id', 'name');
+
+        $products = [
+            ['title'=>'Speckstein (Ohne Titel)','description'=>'2010 – Erste Arbeit überhaupt, freie Form, Bildhauerkurs VHS.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>60.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Eichenholz (Ohne Titel)','description'=>'2011 – Fundstück vom Rhein, freie Form, Bildhauerkurs VHS.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>120.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Frauentorso','description'=>'2012 – Bad Reichenhall.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>280.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Alter Mann (Portrait)','description'=>'2012 – Bad Reichenhall.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Frauenkopf I "……und so geht Tag für Tag ganz still…."','description'=>'2012 – Erster Frauenkopf.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Liegender Akt','description'=>'2013 – Erster Akt.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>850.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Mädchenkopf','description'=>'2013 – Abdruck vom Marmor-Original.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>850.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Köppe I - IV','description'=>'2013 – Studien zu Gesichtsausdrücken.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>75.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Frauenkopf II "…..jetzt sind wir jung und lebendig….."','description'=>'2013 – Beginn einer Frauenkopf-Serie.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Princess','description'=>'2013 – Tonbüste.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>450.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Aktzeichnung','description'=>'04/2013 – Teil einer Aktzeichen-Serie.','category_id'=>$categories['Skizzen'] ?? null,'price'=>250.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Aktzeichen-Serie','description'=>'05/2014 – Unikate, je 250,00 €','category_id'=>$categories['Skizzen'] ?? null,'price'=>250.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Portraitzeichnung (Anna Hathaway)','description'=>'04/2013 – Zeichnung mit Aquarell.','category_id'=>$categories['Skizzen'] ?? null,'price'=>250.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Quallen 1','description'=>'03/2013 – Öl auf Leinwand im Kastenrahmen, Bad Reichenhall.','category_id'=>$categories['Öl'] ?? null,'price'=>650.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Quallen 2','description'=>'03/2013 – Öl auf Leinwand im Kastenrahmen, Bad Reichenhall.','category_id'=>$categories['Öl'] ?? null,'price'=>650.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Aboriginie','description'=>'05/2014 – Schenkung an meine Mutter.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Frauenkopf III "….fast hätten wir uns mal demaskiert…"','description'=>'2014 – Arbeit aus der Frauenkopf-Serie.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Woman','description'=>'11/2014 – 230 x 140 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>3000.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Dailyportraits, kleiner Rahmen','description'=>'2015 – je 110,00 €','category_id'=>$categories['Skizzen'] ?? null,'price'=>110.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Dailyportait-Serie Kategorie 1 (Grün)','description'=>'2015 – je 130,00 €','category_id'=>$categories['Skizzen'] ?? null,'price'=>130.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Dailyportait-Serie Kategorie 2 (Gelb)','description'=>'2015 – je 150,00 €','category_id'=>$categories['Skizzen'] ?? null,'price'=>150.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Dailyportait-Serie Kategorie 3 (Blau)','description'=>'2015 – je 170,00 €','category_id'=>$categories['Skizzen'] ?? null,'price'=>170.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Dailyportait "Are you living your dream?"','description'=>'2015 – Verkauft bei der Ausstellung "Ganz frei" an Rainer Höpken.','category_id'=>$categories['Skizzen'] ?? null,'price'=>170.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Anne, Serie "Thinking Beautyful"','description'=>'2015 – 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Kate, Serie "Thinking Beautyful"','description'=>'2015 – 140 x 100 cm, verkauft an Matthias Hof.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Angelina, Serie "Thinking Beautyful"','description'=>'2015 – 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Kate II, Serie "Thinking Beautyful"','description'=>'2015 – 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Jenny, Serie "Thinking Beautyful"','description'=>'2015 – 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Druckedition der Serie "Thinking Beautyful"','description'=>'2015 – 15 Exemplare, limitierte Auflage.','category_id'=>$categories['Acryl'] ?? null,'price'=>375.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Serie "367" Dailyportraits 2016','description'=>'2016 – 367 Exemplare, insgesamt verkauft: siehe Liste.','category_id'=>$categories['Skizzen'] ?? null,'price'=>95.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Habibti','description'=>'02/2015 – 120 x 160 cm, unverkäuflich.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Zahia I. (Grossformat Vorne)','description'=>'11/2017 – 100 x 70 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>900.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Zahia II. (Grossformat Seite)','description'=>'11/2017 – 100 x 70 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>900.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Zahia III. (Mittelformat)','description'=>'11/2017 – 70 x 50 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Auftragsarbeit Hochzeitsportraits Nico','description'=>'08/2018 – 2 Portraits auf einem DIN A3 Blatt inkl. Rahmen.','category_id'=>$categories['Skizzen'] ?? null,'price'=>150.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Auftragsarbeit Geburtstagsportrait Frieda','description'=>'12/2018 – 2 Portraits einzeln auf je einem DIN A4 Blatt inkl. Rahmen.','category_id'=>$categories['Skizzen'] ?? null,'price'=>150.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Karlie I.','description'=>'08/2018 – Verkauft an Guido Pesch nach Krefeld, bei Besuch im Atelier.','category_id'=>$categories['Acryl'] ?? null,'price'=>250.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Dominika I.','description'=>'09/2018 – Schenkung an Dominika nach Berlin.','category_id'=>$categories['Acryl'] ?? null,'price'=>1800.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Wedding Girl I., Serie aus 4 Bildern, 1 von 4','description'=>'09/2018 – 40 x 40 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>320.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Wedding Girl II., Serie aus 4 Bildern, 2 von 4','description'=>'09/2018 – 40 x 40 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>320.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Wedding Girl III., Serie aus 4 Bildern, 3 von 4','description'=>'09/2018 – 40 x 40 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>320.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Wedding Girl VI., Serie aus 4 Bildern, 4 von 4','description'=>'09/2018 – 40 x 40 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>320.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Every eye is on us','description'=>'09/2018 – 190 x 110 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2800.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Stier "All other Days"','description'=>'03/2019 – Auftragsarbeit, Verkauft an Juan Garcia.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>1800.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'"Troubadours"','description'=>'01/2019 – Projekt mit Paperstreet Empire, Musikvideodreh zu Troubadours, unverkäuflich.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Julia','description'=>'03/2019 – 120 x 80 cm, Serie "social media fans".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Anni','description'=>'04/2019 – 120 x 80 cm, Serie "social media fans".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'But nothing made you want me better -blue sky-','description'=>'05/2019 – 120 x 180 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2800.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'But nothing made you want me better -pink sky-','description'=>'05/2019 – 120 x 180 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2800.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Bianca','description'=>'05/2019 – 80 x 120 cm, Serie "social media fans".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Sven','description'=>'05/2019 – 120 x 80 cm, Serie "social media fans".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Elly','description'=>'05/2019 – 100 x 70 cm, Arbeit aus dem Livepainting @Litfass.','category_id'=>$categories['Acryl'] ?? null,'price'=>900.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Karlie II.','description'=>'05/2019 – 200 x 150 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>3200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Electricity Vertical Part 1 (0:19/3:58)','description'=>'06/2019 – Serie "Electricity Dua Lipa", 160 x 90 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Electricity Vertical Part 2 (0:47/3:58)','description'=>'06/2019 – Serie "Electricity Dua Lipa", 160 x 90 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Electricity Vertical Part 3 (1:12/3:58)','description'=>'06/2019 – Serie "Electricity Dua Lipa", 160 x 90 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Electricity Vertical Part 4 (1:36/3:58)','description'=>'06/2019 – Serie "Electricity Dua Lipa", 160 x 90 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Electricity Vertical Part 5 (2:03/3:58)','description'=>'06/2019 – Serie "Electricity Dua Lipa", 160 x 90 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Electricity Vertical Part 6 (3:42/3:58)','description'=>'06/2019 – Serie "Electricity Dua Lipa", 160 x 90 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'why are we feeling so?','description'=>'06/2019 – 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Jessie','description'=>'06/2019 – 120 x 80 cm, Serie "social media fans", verkauft an Raphael Penning für seine Freundin Jessie.','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Wasserfall - Landschaft','description'=>'07/2019 – 80 x 120 cm, unverkäuflich, Schenkung an Hassana.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Mmiruiz','description'=>'07/2019 – 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Olivia I.','description'=>'08/2019 – 120 x 170 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2500.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'put me out of my misery!','description'=>'01/2020 – 100 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Sabrina','description'=>'02/2020 – 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Sunnymimmi','description'=>'03/2020 – 120 x 80 cm, Serie "social media fans".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Looking for me','description'=>'04/2020 – 140 x 200 cm, verkauft nach Dänemark an Sanne Falck.','category_id'=>$categories['Acryl'] ?? null,'price'=>2800.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'I remember','description'=>'04/2020 – 220 x 140 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>3200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Late night feelings','description'=>'05/2020 – 80 x 240 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2500.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Denise I.','description'=>'08/2020 – 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Jessie II.','description'=>'08/2020 – 140 x 140 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2300.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Late night feelings Part 1 (0:06/3:40)','description'=>'08/2020 – 100 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Late night feelings Part 2 (0:42/3:40)','description'=>'08/2020 – 100 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Nightlights (Time Square)','description'=>'02/2021 – 100 x 70 cm, verkauft an Alfons Jungblut nach Köln.','category_id'=>$categories['Acryl'] ?? null,'price'=>950.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Nicole','description'=>'04/2021 – 120 x 160 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2400.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 1 (anonym)','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 2 (anonym)','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 3 Kira (pseudonym)','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 4 Juli (pseudonym)','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 5 Aneta','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 6 Karin','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 7 Nathascha','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 8 Ingo','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 9 Margos','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'# 10 Frank','description'=>'05/2022 – 100 x 70 cm, Serie "Sucht und Sehnsucht".','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Kopie von Jonas Burgert "stur nur"','description'=>'03/2024 – verkauft an Roland Baska, Moers, 100 x 140 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2500.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Adrienne','description'=>'10/2024 – Auftragsarbeit an Adriene, 90 x 90 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1000.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Stier "All other Days II."','description'=>'03/2025 – Auftragsarbeit an Steffi Breitkreuz, 90 x 160 cm.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>1800.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Ilona','description'=>'07/2025 – Auftragsarbeit an Dr. Christian Schaller aus Stuttgart, 120 x 80 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1400.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Karen III. (Pink Galaxy)','description'=>'12/2024 – unverkäuflich, 80 x 120 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Karen V.','description'=>'08/2025 – Auftragsarbeit an Bettina, 130 x 150 cm, unverkäuflich.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Steffi I.','description'=>'in Process – Geburtstagsgeschenk für meine Schwester, 100 x 70 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Bettina','description'=>'in Process – 80 x 240 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Likki Ly auf Badewanne sitzend','description'=>'in Process – 140 x 210 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>2000.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'One day I will lose you, champagne for all','description'=>'in Process – 120 x 240 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>7920.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'the bitter end (Treppenhaus mit Pfauen)','description'=>'in Process – 150 x 230 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Kopie von Jonas Burgert "Laubt sich"','description'=>'in Process – 220 x 160 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Kopie von Jonas Burgert "Nachtag"','description'=>'in Process – 240 x 300 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Elias I.','description'=>'in Process – 100 x 70 cm, unverkäuflich.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Silvia','description'=>'in Process – 120 x 80 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Karen I. (Luftkuss)','description'=>'in Process – unverkäuflich, 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Karen II. (mit Kaffeebecher)','description'=>'in Process – unverkäuflich, 80 x 120 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Elias II.','description'=>'in Process – unverkäuflich, 140 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Marie','description'=>'in Process – 120 x 80 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Late night feelings Part 3 (1:01/3:40)','description'=>'in Process – 100 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Late night feelings Part 4 (1:19/3:40)','description'=>'in Process – 100 x 100 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>1600.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Dua Lipa auf Bullen','description'=>'in Process.','category_id'=>$categories['Acryl'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Karlie III.','description'=>'in Process – 200 x 150 cm.','category_id'=>$categories['Acryl'] ?? null,'price'=>3200.00,'image'=>'products/placeholder.gif','isActive'=>false],
+        ];
+
+        foreach ($products as $product) {
+            Product::create($product);
+        }
     }
 }
