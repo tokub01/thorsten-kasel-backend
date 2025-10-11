@@ -44,6 +44,20 @@ Route::prefix('categories')
             Route::delete('{category}', 'CategoryController@destroy');
         });
     });
+
+Route::prefix('news')
+    ->namespace('App\Http\Controllers\api\v1\News')
+    ->group(function () {
+        Route::get('/', 'NewsController@index');
+        Route::get('{news}', 'NewsController@show');
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', 'NewsController@store');
+            Route::put('{news}', 'NewsController@update');
+            Route::delete('{news}', 'NewsController@destroy');
+        });
+    });
+
 Route::prefix('contact')
     ->namespace('App\Http\Controllers\api\v1\Contact')
     ->group(function () {

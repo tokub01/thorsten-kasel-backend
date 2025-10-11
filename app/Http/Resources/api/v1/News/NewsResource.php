@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Resources\api\v1\Product;
+namespace App\Http\Resources\api\v1\News;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Category;
 
-class ProductResource extends JsonResource
+class NewsResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -26,9 +25,9 @@ class ProductResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'category_id' => Category::find($this->category_id),
             'title' => $this->title,
             'description' => $this->description,
+            'text' => $this->text,
             'image' => $temporaryImageUrl,
             'isActive' => $this->isActive,
         ];
