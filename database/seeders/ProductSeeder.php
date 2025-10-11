@@ -13,19 +13,19 @@ class ProductSeeder extends Seeder
         $categories = Category::pluck('id', 'name');
 
         $products = [
-            ['title'=>'Speckstein (Ohne Titel)','description'=>'2010 – Erste Arbeit überhaupt, freie Form, Bildhauerkurs VHS.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>60.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Speckstein (Ohne Titel)','description'=>'2010 – Erste Arbeit überhaupt, freie Form, Bildhauerkurs VHS.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>60.00,'image'=>'products/placeholder.gif','isActive'=>true],
             ['title'=>'Eichenholz (Ohne Titel)','description'=>'2011 – Fundstück vom Rhein, freie Form, Bildhauerkurs VHS.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>120.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Frauentorso','description'=>'2012 – Bad Reichenhall.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>280.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Alter Mann (Portrait)','description'=>'2012 – Bad Reichenhall.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>600.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Frauenkopf I "……und so geht Tag für Tag ganz still…."','description'=>'2012 – Erster Frauenkopf.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>600.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Liegender Akt','description'=>'2013 – Erster Akt.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>850.00,'image'=>'products/placeholder.gif','isActive'=>false],
-            ['title'=>'Mädchenkopf','description'=>'2013 – Abdruck vom Marmor-Original.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>850.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Mädchenkopf','description'=>'2013 – Abdruck vom Marmor-Original.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>850.00,'image'=>'products/placeholder.gif','isActive'=>true],
             ['title'=>'Köppe I - IV','description'=>'2013 – Studien zu Gesichtsausdrücken.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>75.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Frauenkopf II "…..jetzt sind wir jung und lebendig….."','description'=>'2013 – Beginn einer Frauenkopf-Serie.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>600.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Princess','description'=>'2013 – Tonbüste.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>450.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Aktzeichnung','description'=>'04/2013 – Teil einer Aktzeichen-Serie.','category_id'=>$categories['Skizzen'] ?? null,'price'=>250.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Aktzeichen-Serie','description'=>'05/2014 – Unikate, je 250,00 €','category_id'=>$categories['Skizzen'] ?? null,'price'=>250.00,'image'=>'products/placeholder.gif','isActive'=>false],
-            ['title'=>'Portraitzeichnung (Anna Hathaway)','description'=>'04/2013 – Zeichnung mit Aquarell.','category_id'=>$categories['Skizzen'] ?? null,'price'=>250.00,'image'=>'products/placeholder.gif','isActive'=>false],
+            ['title'=>'Portraitzeichnung (Anna Hathaway)','description'=>'04/2013 – Zeichnung mit Aquarell.','category_id'=>$categories['Skizzen'] ?? null,'price'=>250.00,'image'=>'products/placeholder.gif','isActive'=>true],
             ['title'=>'Quallen 1','description'=>'03/2013 – Öl auf Leinwand im Kastenrahmen, Bad Reichenhall.','category_id'=>$categories['Öl'] ?? null,'price'=>650.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Quallen 2','description'=>'03/2013 – Öl auf Leinwand im Kastenrahmen, Bad Reichenhall.','category_id'=>$categories['Öl'] ?? null,'price'=>650.00,'image'=>'products/placeholder.gif','isActive'=>false],
             ['title'=>'Aboriginie','description'=>'05/2014 – Schenkung an meine Mutter.','category_id'=>$categories['Skulpturen'] ?? null,'price'=>null,'image'=>'products/placeholder.gif','isActive'=>false],
