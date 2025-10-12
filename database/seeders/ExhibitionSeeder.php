@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Exhibition;
 
-class NewsSeeder extends Seeder
+class ExhibitionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
