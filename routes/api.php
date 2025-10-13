@@ -58,6 +58,19 @@ Route::prefix('news')
         });
     });
 
+Route::prefix('exhibitions')
+    ->namespace('App\Http\Controllers\api\v1\Exhibition')
+    ->group(function () {
+        Route::get('/', 'ExhibitionController@index');
+        Route::get('{exhibition}', 'ExhibitionController@show');
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', 'ExhibitionController@store');
+            Route::put('{exhibition}', 'ExhibitionController@update');
+            Route::delete('{exhibition}', 'ExhibitionController@destroy');
+        });
+    });
+
 Route::prefix('contact')
     ->namespace('App\Http\Controllers\api\v1\Contact')
     ->group(function () {
