@@ -2,7 +2,7 @@
 namespace App\Http\Resources\api\v1\Exhibition;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
-class NewsResourceCollection extends ResourceCollection
+class ExhibitionResourceCollection extends ResourceCollection
 {
     public function toArray($request)
     {
