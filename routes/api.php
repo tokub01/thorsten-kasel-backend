@@ -82,11 +82,12 @@ Route::prefix('contact')
 Route::prefix('users')
     ->namespace('App\Http\Controllers\api\v1\User')
     ->group(function () {
-        Route::middleware('auth:sanctum')->group(function () {
-            Route::get('/', 'UserController@index');
-            Route::get('{user}', 'UserController@show');
-            Route::post('/', 'UserController@store');
-            Route::put('{user}', 'UserController@update');
-            Route::delete('{user}', 'UserController@destroy');
-        });
+            Route::get('{user}/biography', 'UserController@biography');
+            Route::middleware('auth:sanctum')->group(function () {
+                Route::get('/', 'UserController@index');
+                Route::get('{user}', 'UserController@show');
+                Route::post('/', 'UserController@store');
+                Route::put('{user}', 'UserController@update');
+                Route::delete('/{user}', 'UserController@destroy');
+            });
     });
