@@ -22,11 +22,12 @@ class ProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'image' => 'required|image',
+            'title' => 'nullable',
+            'description' => 'nullable',
+            'image' => 'nullable',
             'price' => 'numeric', // Optionales Feld, du kannst hier ggf. zusätzliche Regeln ergänzen
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'isActive' => 'nullable|boolean',
         ];
     }
 

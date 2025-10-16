@@ -3,6 +3,7 @@
 namespace App\Http\Requests\api\v1\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
 {
@@ -13,12 +14,28 @@ class UserRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        $userId = $this->route('user')?->id; // ID für Update, null bei Store
+
+        $rules = [
+            'name' => ['nullable', 'string', 'max:255'], // optional beim Update
+            'email' => [
+                'nullable',
+                'email',
+                $userId
+                    ? Rule::unique('users', 'email')->ignore($userId)
+                    : 'unique:users,email',
+            ],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'], // nur validieren, wenn gesetzt
             'biography' => ['nullable', 'string'],
         ];
+
+        // Passwort beim Erstellen zwingend
+        if ($this->isMethod('post')) {
+            $rules['name'][] = 'required';
+            $rules['password'][] = 'required';
+        }
+
+        return $rules;
     }
 
     public function messages(): array

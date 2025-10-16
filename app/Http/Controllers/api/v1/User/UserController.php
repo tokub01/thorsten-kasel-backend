@@ -101,8 +101,15 @@ class UserController extends Controller
         try {
             $data = $request->validated();
 
-            if (isset($data['password'])) {
-                $data['password'] = bcrypt($data['password']);
+            \Log::info('Validated Data:', $data);
+
+            if ($request->has('password') && $request->password) {
+                $data['password'] = bcrypt($request->password);
+            }
+
+            // Biographie setzen, falls übermittelt
+            if ($request->has('biography')) {
+                $data['biography'] = $request->biography;
             }
 
             $user->update($data);
@@ -142,4 +149,28 @@ class UserController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get the biography of a specific user.
+     *
+     * @param User $user
+     * @return JsonResponse
+     */
+    public function biography(User $user): JsonResponse
+    {
+        try {
+            return response()->json([
+                'user_id' => $user->id,
+                'biography' => $user->biography,
+            ], 200);
+        } catch (\Throwable $e) {
+            \Log::error('Failed to fetch biography: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Unable to retrieve biography.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }

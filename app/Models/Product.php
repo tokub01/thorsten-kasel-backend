@@ -15,7 +15,8 @@ class Product extends Model
       'description',
       'image',
       'price',
-      'category_id'
+      'category_id',
+      'isActive'
     ];
 
     public function category() : HasOne
