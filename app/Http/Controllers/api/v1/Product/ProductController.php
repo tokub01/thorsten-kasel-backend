@@ -157,7 +157,7 @@ class ProductController extends Controller
     public function destroy(Product $product): JsonResponse
     {
         try {
-            if ($product->image && Storage::disk('s3')->exists($product->image)) {
+            if ($product->image && Storage::disk('s3')->exists($product->image) && !str_contains($product->image, 'placeholder')) {
                 Storage::disk('s3')->delete($product->image);
             }
 
