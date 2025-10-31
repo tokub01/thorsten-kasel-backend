@@ -121,12 +121,12 @@ class ExhibitionController extends Controller
 
             if ($request->hasFile('image')) {
                 // Altes Bild löschen, falls vorhanden
-                if ($news->image && Storage::disk('s3')->exists($news->image)) {
-                    Storage::disk('s3')->delete($news->image);
+                if ($exhibition->image && Storage::disk('s3')->exists($exhibition->image)) {
+                    Storage::disk('s3')->delete($exhibition->image);
                 }
 
                 // Neues Bild hochladen
-                $path = $request->file('image')->store('news', 's3');
+                $path = $request->file('image')->store('exhibitions', 's3');
                 $data['image'] = $path;
             }
 
@@ -134,7 +134,7 @@ class ExhibitionController extends Controller
 
             $exhibition->save();
 
-            return response()->json(new ExhibitionResource($news), 200);
+            return response()->json(new ExhibitionResource($exhibition), 200);
         } catch (Throwable $e) {
             Log::error('Failed to update exhibitions article: ' . $e->getMessage());
 
@@ -154,7 +154,7 @@ class ExhibitionController extends Controller
     public function destroy(Exhibition $exhibition): JsonResponse
     {
         try {
-            if ($news->image && Storage::disk('s3')->exists($news->image)) {
+            if ($news->image && Storage::disk('s3')->exists($news->image) && !str_contains($exhibition->image, 'placeholder')) {
                 Storage::disk('s3')->delete($news->image);
             }
 

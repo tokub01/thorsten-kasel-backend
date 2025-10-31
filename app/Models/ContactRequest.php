@@ -12,5 +12,7 @@ class ContactRequest extends Model
       'email',
       'name',
       'message',
+      'isVerified',
+      'isRead'
     ];
 }

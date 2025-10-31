@@ -13,6 +13,7 @@ use App\Mail\ContactMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ContactRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
@@ -71,9 +72,7 @@ class ContactController extends Controller
             'token' => $token,
         ]);
 
-        $url = route('contact.verify', ['token' => $token]);
-
-        Mail::to($request->email)->send(new ContactVerificationMail($url));
+        Mail::to($request->email)->send(new ContactVerificationMail(env('FRONTEND_KEY').'/verifyContact/' . $token));
 
         return response()->json([
             'success' => true,
@@ -109,7 +108,9 @@ class ContactController extends Controller
             'email' => $pending->email,
             'name' => $pending->name,
             'message' => $pending->message,
+            'token' => $pending->token,
         ]);
+
 
         Mail::to('tobias.kubina@protonmail.com')
             ->send(new ContactMail($pending->name, $pending->email, $pending->message));
@@ -119,5 +120,34 @@ class ContactController extends Controller
             'message' => "Verifizierungsemail erfolgreich gesendet!",
             'errors' => '',
         ]);
+    }
+
+    public function getContactRequest(){
+        try {
+            return response()->json([
+                "success" => true,
+                "message" => "Kontaktaanfragen erfolgreich geladen",
+                "data" =>   ContactRequest::all(),
+            ]);
+        } catch (Throwable $e) {
+            Log::error('Failed to fetch products: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Unable to retrieve products.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updateContactRequest(Request $request, ContactRequest $contactRequest){
+        try{
+            $contactRequest->update(['isRead' => $request['isRead']]);
+        }catch(\Exception $e){
+            Log::debug($e);
+            return response()->json([
+                'message' => 'Unable to retrieve products.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

@@ -154,7 +154,7 @@ class NewsController extends Controller
     public function destroy(News $news): JsonResponse
     {
         try {
-            if ($news->image && Storage::disk('s3')->exists($news->image)) {
+            if ($news->image && Storage::disk('s3')->exists($news->image) && !str_contains($news->image, 'placeholder')) {
                 Storage::disk('s3')->delete($news->image);
             }
 

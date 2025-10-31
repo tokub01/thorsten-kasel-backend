@@ -76,7 +76,12 @@ Route::prefix('contact')
     ->group(function () {
         Route::post('/', 'ContactController@submit');
         Route::post('/verify', 'ContactController@verify');
-
+    });
+Route::prefix('contact-requests')
+    ->namespace('App\Http\Controllers\api\v1\Contact')
+    ->group(function () {
+        Route::get('/', 'ContactController@getContactRequest');
+        Route::put('{contactRequest}', 'ContactController@updateContactRequest');
     });
 
 Route::prefix('users')

@@ -10,6 +10,6 @@
     <p><strong>Name:</strong> {{ $name }}</p>
     <p><strong>E-Mail:</strong> {{ $email }}</p>
     <p><strong>Nachricht:</strong></p>
-    <p>{{ $message }}</p>
+    <p>{{ $userMessage }}</p>
 </body>
 </html>
