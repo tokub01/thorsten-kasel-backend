@@ -154,8 +154,8 @@ class ExhibitionController extends Controller
     public function destroy(Exhibition $exhibition): JsonResponse
     {
         try {
-            if ($news->image && Storage::disk('s3')->exists($news->image) && !str_contains($exhibition->image, 'placeholder')) {
-                Storage::disk('s3')->delete($news->image);
+            if ($exhibition->image && Storage::disk('s3')->exists($exhibition->image) && !str_contains($exhibition->image, 'placeholder')) {
+                Storage::disk('s3')->delete($exhibition->image);
             }
 
             $exhibition->delete();
