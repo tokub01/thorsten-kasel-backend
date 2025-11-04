@@ -134,7 +134,7 @@ class NewsController extends Controller
 
             $news->save();
 
-            return response()->json(new NewsResource($news), 200);
+            return response()->json(new NewsResource($news->fresh()), 200);
         } catch (Throwable $e) {
             Log::error('Failed to update news article: ' . $e->getMessage());
 

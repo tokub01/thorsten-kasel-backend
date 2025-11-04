@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Throwable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+
 /**
  * @group Exhibition Management
  *
@@ -29,28 +30,25 @@ class ExhibitionController extends Controller
     {
         try {
             $keyword = trim($request->query('keyword', ''));
-            $sort = $request->query('sort', 'newest'); // Default: neueste zuerst
+            $sort = $request->query('sort', 'desc'); // ✅ 'desc' oder 'asc' statt 'newest'/'oldest'
 
-            $exhibition = Exhibition::query()
+            $exhibitions = Exhibition::query()
                 ->when($keyword !== '', function ($query) use ($keyword) {
-                    $query->where('title', 'like', '%' . $keyword . '%');
+                    $query->where('title', 'like', '%' . $keyword . '%')
+                          ->orWhere('description', 'like', '%' . $keyword . '%'); // ✅ Auch Beschreibung durchsuchen
                 })
-                ->when(in_array($sort, ['newest', 'oldest']), function ($query) use ($sort) {
-                    if ($sort === 'newest') {
-                        $query->orderBy('created_at', 'desc');
-                    } else {
-                        $query->orderBy('created_at', 'asc');
-                    }
+                ->when(in_array($sort, ['desc', 'asc']), function ($query) use ($sort) {
+                    $query->orderBy('created_at', $sort);
                 })
                 ->get();
 
-            return (new ExhibitionResourceCollection($exhibition))->toResponse($request);
+            return (new ExhibitionResourceCollection($exhibitions))->toResponse($request);
 
         } catch (Throwable $e) {
-            Log::error('Failed to fetch news: ' . $e->getMessage());
+            Log::error('Failed to fetch exhibitions: ' . $e->getMessage()); // ✅ Korrekter Text
 
             return response()->json([
-                'message' => 'Unable to retrieve news.',
+                'message' => 'Unable to retrieve exhibitions.',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -65,12 +63,12 @@ class ExhibitionController extends Controller
     public function show(Exhibition $exhibition): JsonResponse
     {
         try {
-            return response()->json(new ExhibitionResource($news), 200);
+            return response()->json(new ExhibitionResource($exhibition), 200); // ✅ $exhibition statt $news
         } catch (Throwable $e) {
             Log::error('Failed to fetch exhibition: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'Unable to retrieve the exhibitions article.',
+                'message' => 'Unable to retrieve the exhibition article.',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -88,20 +86,20 @@ class ExhibitionController extends Controller
             $data = $request->validated();
 
             if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('exhibitions', 's3'); // Ordner: exhibitions/
-                $url = Storage::disk('s3')->url($path);
-
+                $path = $request->file('image')->store('exhibitions', 's3');
                 $data['image'] = $path;
             }
 
-            $product = Exhibition::create($data);
+            $exhibition = Exhibition::create($data); // ✅ $exhibition statt $product
 
-            return (new ExhibitionResourceCollection(Exhibition::all()))->toResponse($request);
+            // ✅ Gib die neu erstellte Exhibition zurück, nicht alle
+            return response()->json(new ExhibitionResource($exhibition), 201);
+
         } catch (Throwable $e) {
             Log::error('Failed to store exhibition: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'Unable to store exhibitions article.',
+                'message' => 'Unable to store exhibition article.',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -111,7 +109,7 @@ class ExhibitionController extends Controller
      * Update the specified exhibition article in storage.
      *
      * @param UpdateExhibitionRequest $request
-     * @param News $news
+     * @param Exhibition $exhibition
      * @return JsonResponse
      */
     public function update(UpdateExhibitionRequest $request, Exhibition $exhibition): JsonResponse
@@ -131,12 +129,11 @@ class ExhibitionController extends Controller
             }
 
             $exhibition->update($data);
+            
+            return response()->json(new ExhibitionResource($exhibition->fresh()), 200);
 
-            $exhibition->save();
-
-            return response()->json(new ExhibitionResource($exhibition), 200);
         } catch (Throwable $e) {
-            Log::error('Failed to update exhibitions article: ' . $e->getMessage());
+            Log::error('Failed to update exhibition article: ' . $e->getMessage());
 
             return response()->json([
                 'message' => 'Unable to update exhibition.',
@@ -146,7 +143,7 @@ class ExhibitionController extends Controller
     }
 
     /**
-     * Remove the specified exhibitions article from storage.
+     * Remove the specified exhibition article from storage.
      *
      * @param Exhibition $exhibition
      * @return JsonResponse
@@ -164,7 +161,7 @@ class ExhibitionController extends Controller
                 'message' => 'Exhibition deleted successfully.',
             ], 200);
         } catch (Throwable $e) {
-            Log::error('Failed to delete following exhibition article: ' . $e->getMessage());
+            Log::error('Failed to delete exhibition article: ' . $e->getMessage());
 
             return response()->json([
                 'message' => 'Unable to delete specified exhibition article.',

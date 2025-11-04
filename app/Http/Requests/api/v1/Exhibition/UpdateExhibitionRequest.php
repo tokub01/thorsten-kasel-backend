@@ -22,12 +22,11 @@ class UpdateExhibitionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => "nullable|string",
-            "description" => "nullable|string",
-            "text" => "nullable|string",
-            "date" => "nullable|date",
-            "image" => "nullable|string",
-            "isActive" => "nullable",
+            'title'       => ['required', 'string', 'filled', 'max:255'],
+            'description' => ['required', 'nullable', 'string'],
+            'text'        => ['required', 'nullable', 'string'],
+            'image'    => ['nullable', 'image', 'max:2048'],
+            'isActive'    => ['required', 'boolean'],
         ];
     }
 }
