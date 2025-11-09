@@ -17,7 +17,7 @@ class CategoryController extends Controller
     /**
      * Display a listing of categories.
      */
-    public function index(Request $request): JsonResponse  // ✅ Request statt CategoryRequest
+    public function index(Request $request): JsonResponse
     {
         try {
             $categories = Category::with('product')->get();
@@ -38,21 +38,27 @@ class CategoryController extends Controller
     /**
      * Display the specified category.
      */
-    public function show(Request $request, $id): JsonResponse  // ✅ Request statt CategoryRequest
+    public function show(Request $request, $category): JsonResponse
     {
         try {
-            $category = Category::with('product')->find($id);
+            // Laravel Route Model Binding macht aus {category} automatisch ein Model
+            // Oder es ist eine ID als String
+            if (is_object($category)) {
+                $categoryModel = $category;
+            } else {
+                $categoryModel = Category::with('product')->find($category);
+            }
 
-            if (!$category) {
+            if (!$categoryModel) {
                 return response()->json([
                     'message' => 'Kategorie nicht gefunden.',
                 ], 404);
             }
 
-            return (new CategoryResource($category))->toResponse($request);
+            return (new CategoryResource($categoryModel))->toResponse($request);
         } catch (Throwable $e) {
             Log::error('Failed to fetch category', [
-                'category_id' => $id,
+                'category' => $category,
                 'error' => $e->getMessage(),
             ]);
 
@@ -66,10 +72,14 @@ class CategoryController extends Controller
     /**
      * Store a newly created category.
      */
-    public function store(CategoryRequest $request): JsonResponse  // ✅ CategoryRequest
+    public function store(CategoryRequest $request): JsonResponse
     {
         try {
             $data = $request->validated();
+
+            Log::info('Creating category', [
+                'data' => $data,
+            ]);
 
             $category = Category::create($data);
             $category->load('product');
@@ -79,8 +89,10 @@ class CategoryController extends Controller
                 ->setStatusCode(201);
         } catch (Throwable $e) {
             Log::error('Failed to create category', [
-                'data' => $request->validated(),
+                'data' => $request->all(),
+                'validated' => $request->validated(),
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
@@ -93,32 +105,84 @@ class CategoryController extends Controller
     /**
      * Update the specified category.
      */
-    public function update(CategoryRequest $request, $id): JsonResponse  // ✅ CategoryRequest
+    public function update(CategoryRequest $request, $category): JsonResponse
     {
         try {
-            $category = Category::find($id);
+            // Laravel Route Model Binding macht aus {category} automatisch ein Model
+            // Oder es ist eine ID als String
+            if (is_object($category)) {
+                $categoryModel = $category;
+                $id = $category->id;
+            } else {
+                $id = $category;
+                $categoryModel = Category::find($id);
+            }
 
-            if (!$category) {
+            // Logge alle eingehenden Daten für Debugging
+            Log::info('Update request received', [
+                'category_param' => $category,
+                'id' => $id,
+                'all_input' => $request->all(),
+                'method' => $request->method(),
+                '_method' => $request->input('_method'),
+                'has_name' => $request->has('name'),
+                'name_value' => $request->input('name'),
+                'has_product_id' => $request->has('product_id'),
+                'product_id_value' => $request->input('product_id'),
+            ]);
+
+            if (!$categoryModel) {
+                Log::warning('Category not found for update', ['id' => $id]);
+
                 return response()->json([
                     'message' => 'Kategorie nicht gefunden.',
                 ], 404);
             }
 
+            // Hole validierte Daten
             $data = $request->validated();
 
-            Log::info('Updating category', [
+            Log::info('Updating category with validated data', [
                 'id' => $id,
-                'data' => $data,
+                'current_name' => $categoryModel->name,
+                'new_data' => $data,
             ]);
 
-            $category->update($data);
-            $category->load('product');
+            // Update durchführen
+            $categoryModel->update($data);
 
-            return (new CategoryResource($category->fresh()))->toResponse($request);
+            // Lade Beziehungen neu
+            $categoryModel->load('product');
+
+            // Hole frische Instanz aus DB
+            $categoryModel = $categoryModel->fresh(['product']);
+
+            Log::info('Category updated successfully', [
+                'id' => $id,
+                'updated_category' => $categoryModel->toArray(),
+            ]);
+
+            return (new CategoryResource($categoryModel))->toResponse($request);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Validation Fehler explizit loggen
+            Log::error('Validation failed for category update', [
+                'category' => $category,
+                'errors' => $e->errors(),
+                'input' => $request->all(),
+            ]);
+
+            return response()->json([
+                'message' => 'Validierungsfehler.',
+                'errors' => $e->errors(),
+            ], 422);
+
         } catch (Throwable $e) {
             Log::error('Failed to update category', [
-                'id' => $id,
+                'category' => $category,
+                'input' => $request->all(),
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
@@ -131,25 +195,31 @@ class CategoryController extends Controller
     /**
      * Remove the specified category.
      */
-    public function destroy(Request $request, $id): JsonResponse  // ✅ Request statt CategoryRequest
+    public function destroy(Request $request, $category): JsonResponse
     {
         try {
-            $category = Category::find($id);
+            // Laravel Route Model Binding macht aus {category} automatisch ein Model
+            // Oder es ist eine ID als String
+            if (is_object($category)) {
+                $categoryModel = $category;
+            } else {
+                $categoryModel = Category::find($category);
+            }
 
-            if (!$category) {
+            if (!$categoryModel) {
                 return response()->json([
                     'message' => 'Kategorie nicht gefunden.',
                 ], 404);
             }
 
-            $category->delete();
+            $categoryModel->delete();
 
             return response()->json([
                 'message' => 'Kategorie erfolgreich gelöscht.',
             ], 200);
         } catch (Throwable $e) {
             Log::error('Failed to delete category', [
-                'id' => $id,
+                'category' => $category,
                 'error' => $e->getMessage(),
             ]);
 

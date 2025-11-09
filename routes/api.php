@@ -24,7 +24,6 @@ Route::prefix('products')
     ->group(function () {
         Route::get('/', 'ProductController@index');
         Route::get('{product}', 'ProductController@show');
-
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', 'ProductController@store');
             Route::put('{product}', 'ProductController@update');
@@ -37,10 +36,13 @@ Route::prefix('categories')
     ->group(function () {
         Route::get('/', 'CategoryController@index');
         Route::get('{category}', 'CategoryController@show');
-
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', 'CategoryController@store');
-            Route::put('{category}', 'CategoryController@update');
+
+            // ✅ BEIDE UPDATE-METHODEN UNTERSTÜTZEN
+            Route::put('{category}', 'CategoryController@update');      // Echter PUT
+            Route::post('{category}', 'CategoryController@update');     // POST mit _method='PUT'
+
             Route::delete('{category}', 'CategoryController@destroy');
         });
     });
@@ -50,7 +52,6 @@ Route::prefix('news')
     ->group(function () {
         Route::get('/', 'NewsController@index');
         Route::get('{news}', 'NewsController@show');
-
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', 'NewsController@store');
             Route::put('{news}', 'NewsController@update');
@@ -63,7 +64,6 @@ Route::prefix('exhibitions')
     ->group(function () {
         Route::get('/', 'ExhibitionController@index');
         Route::get('{exhibition}', 'ExhibitionController@show');
-
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', 'ExhibitionController@store');
             Route::put('{exhibition}', 'ExhibitionController@update');
@@ -77,6 +77,7 @@ Route::prefix('contact')
         Route::post('/', 'ContactController@submit');
         Route::post('/verify', 'ContactController@verify');
     });
+
 Route::prefix('contact-requests')
     ->namespace('App\Http\Controllers\api\v1\Contact')
     ->group(function () {
