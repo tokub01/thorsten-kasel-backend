@@ -2,25 +2,53 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Category;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 class Product extends Model
 {
-    use SoftDeletes, HasFactory;
+    use HasFactory;
+
     protected $fillable = [
-      'title',
-      'description',
-      'image',
-      'price',
-      'category_id',
-      'isActive'
+        'title',
+        'description',
+        'image',
+        'price',
+        'category_id',
+        'isActive',
     ];
 
-    public function category() : HasOne
+    protected $casts = [
+        'price' => 'decimal:2',
+        'isActive' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Get the category that owns the product.
+     */
+    public function category(): BelongsTo
     {
-        return $this->hasOne(Category::class);
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the image URL attribute.
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) {
+            return null;
+        }
+
+        // Wenn bereits vollständige URL
+        if (str_starts_with($this->image, 'http')) {
+            return $this->image;
+        }
+
+        // S3 URL generieren
+        return \Storage::disk('s3')->url($this->image);
     }
 }

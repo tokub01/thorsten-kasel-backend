@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Throwable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+
 /**
  * @group Product Management
  *
@@ -29,22 +30,20 @@ class ProductController extends Controller
         try {
             $keyword = trim($request->query('keyword', ''));
             $category = $request->query('category');
-            $sort = $request->query('sort', 'newest'); // Default: neueste zuerst
+            $sort = $request->query('sort', 'desc'); // ✅ 'desc' oder 'asc'
 
             $products = Product::query()
                 ->when($keyword !== '', function ($query) use ($keyword) {
-                    $query->where('title', 'like', '%' . $keyword . '%');
+                    $query->where('title', 'like', '%' . $keyword . '%')
+                          ->orWhere('description', 'like', '%' . $keyword . '%');
                 })
                 ->when(!is_null($category) && $category !== '', function ($query) use ($category) {
                     $query->where('category_id', $category);
                 })
-                ->when(in_array($sort, ['newest', 'oldest']), function ($query) use ($sort) {
-                    if ($sort === 'newest') {
-                        $query->orderBy('created_at', 'desc');
-                    } else {
-                        $query->orderBy('created_at', 'asc');
-                    }
+                ->when(in_array($sort, ['desc', 'asc']), function ($query) use ($sort) {
+                    $query->orderBy('created_at', $sort);
                 })
+                ->with('category') // ✅ Category eager loading
                 ->get();
 
             return (new ProductResourceCollection($products))->toResponse($request);
@@ -54,7 +53,7 @@ class ProductController extends Controller
 
             return response()->json([
                 'message' => 'Unable to retrieve products.',
-                'error' => $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }
@@ -68,13 +67,16 @@ class ProductController extends Controller
     public function show(Product $product): JsonResponse
     {
         try {
+            // ✅ Category laden
+            $product->load('category');
+
             return response()->json(new ProductResource($product), 200);
         } catch (Throwable $e) {
             Log::error('Failed to fetch product: ' . $e->getMessage());
 
             return response()->json([
                 'message' => 'Unable to retrieve the product.',
-                'error' => $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }
@@ -90,22 +92,31 @@ class ProductController extends Controller
         try {
             $data = $request->validated();
 
+            // Bild nur speichern wenn vorhanden
             if ($request->hasFile('image')) {
-                $path = $request->file('image')->store('products', 's3'); // Ordner: products/
-                $url = Storage::disk('s3')->url($path);
-
+                $path = $request->file('image')->store('products', 's3');
                 $data['image'] = $path;
+            } else {
+                $data['image'] = null;
             }
 
             $product = Product::create($data);
 
-            return (new ProductResourceCollection(Product::all()))->toResponse($request);
+            // ✅ Category laden für Response
+            $product->load('category');
+
+            // ✅ Nur das neue Produkt zurückgeben, nicht alle
+            return response()->json(new ProductResource($product), 201);
+
         } catch (Throwable $e) {
-            Log::error('Failed to store product: ' . $e->getMessage());
+            Log::error('Failed to store product: ' . $e->getMessage(), [
+                'request_data' => $request->except('image'),
+                'has_file' => $request->hasFile('image'),
+            ]);
 
             return response()->json([
                 'message' => 'Unable to store product.',
-                'error' => $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }
@@ -122,28 +133,39 @@ class ProductController extends Controller
         try {
             $data = $request->validated();
 
+            // Nur Bild aktualisieren wenn neues hochgeladen wurde
             if ($request->hasFile('image')) {
                 // Altes Bild löschen, falls vorhanden
-                if ($product->image && Storage::disk('s3')->exists($product->image)) {
+                if ($product->image &&
+                    Storage::disk('s3')->exists($product->image) &&
+                    !str_contains($product->image, 'placeholder')) {
                     Storage::disk('s3')->delete($product->image);
                 }
 
                 // Neues Bild hochladen
                 $path = $request->file('image')->store('products', 's3');
                 $data['image'] = $path;
+            } else {
+                // ✅ Bild-Feld aus Update entfernen wenn kein neues Bild
+                unset($data['image']);
             }
 
             $product->update($data);
 
-            $product->save();
+            // ✅ Category laden für Response
+            $product->load('category');
 
-            return response()->json(new ProductResource($product), 200);
+            return response()->json(new ProductResource($product->fresh()), 200);
+
         } catch (Throwable $e) {
-            Log::error('Failed to update product: ' . $e->getMessage());
+            Log::error('Failed to update product: ' . $e->getMessage(), [
+                'product_id' => $product->id,
+                'request_data' => $request->except('image'),
+            ]);
 
             return response()->json([
                 'message' => 'Unable to update product.',
-                'error' => $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }
@@ -157,7 +179,10 @@ class ProductController extends Controller
     public function destroy(Product $product): JsonResponse
     {
         try {
-            if ($product->image && Storage::disk('s3')->exists($product->image) && !str_contains($product->image, 'placeholder')) {
+            // Bild löschen falls vorhanden und nicht Placeholder
+            if ($product->image &&
+                Storage::disk('s3')->exists($product->image) &&
+                !str_contains($product->image, 'placeholder')) {
                 Storage::disk('s3')->delete($product->image);
             }
 
@@ -166,12 +191,15 @@ class ProductController extends Controller
             return response()->json([
                 'message' => 'Product deleted successfully.',
             ], 200);
+
         } catch (Throwable $e) {
-            Log::error('Failed to delete product: ' . $e->getMessage());
+            Log::error('Failed to delete product: ' . $e->getMessage(), [
+                'product_id' => $product->id,
+            ]);
 
             return response()->json([
                 'message' => 'Unable to delete product.',
-                'error' => $e->getMessage(),
+                'error' => config('app.debug') ? $e->getMessage() : 'An error occurred',
             ], 500);
         }
     }

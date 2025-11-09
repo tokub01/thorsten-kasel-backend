@@ -8,126 +8,154 @@ use App\Http\Resources\api\v1\Category\CategoryResource;
 use App\Http\Resources\api\v1\Category\CategoryResourceCollection;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
-use Illuminate\Http\Request;
 
-/**
- * @group Category Management
- *
- * Handles all category-related API operations.
- */
 class CategoryController extends Controller
 {
     /**
      * Display a listing of categories.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse  // ✅ Request statt CategoryRequest
     {
         try {
-            $categories = Category::all();
+            $categories = Category::with('product')->get();
+
             return (new CategoryResourceCollection($categories))->toResponse($request);
         } catch (Throwable $e) {
-            Log::error('Failed to fetch categories: ' . $e->getMessage());
+            Log::error('Failed to fetch categories', [
+                'error' => $e->getMessage(),
+            ]);
 
             return response()->json([
-                'message' => 'Unable to retrieve categories.',
-                'error' => $e->getMessage(),
+                'message' => 'Fehler beim Laden der Kategorien.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Ein Fehler ist aufgetreten',
             ], 500);
         }
     }
 
     /**
      * Display the specified category.
-     *
-     * @param CategoryRequest $request
-     * @param Category $category
-     * @return JsonResponse
      */
-    public function show(Request $request, Category $category): JsonResponse
+    public function show(Request $request, $id): JsonResponse  // ✅ Request statt CategoryRequest
     {
         try {
+            $category = Category::with('product')->find($id);
+
+            if (!$category) {
+                return response()->json([
+                    'message' => 'Kategorie nicht gefunden.',
+                ], 404);
+            }
+
             return (new CategoryResource($category))->toResponse($request);
         } catch (Throwable $e) {
-            Log::error('Failed to fetch category: ' . $e->getMessage());
+            Log::error('Failed to fetch category', [
+                'category_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
 
             return response()->json([
-                'message' => 'Unable to retrieve the category.',
-                'error' => $e->getMessage(),
+                'message' => 'Fehler beim Laden der Kategorie.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Ein Fehler ist aufgetreten',
             ], 500);
         }
     }
 
     /**
      * Store a newly created category.
-     *
-     * @param CategoryRequest $request
-     * @return JsonResponse
      */
-    public function store(CategoryRequest $request): JsonResponse
+    public function store(CategoryRequest $request): JsonResponse  // ✅ CategoryRequest
     {
         try {
             $data = $request->validated();
-            $category = Category::create($data);
 
-            return (new CategoryResource($category))->toResponse($request);
+            $category = Category::create($data);
+            $category->load('product');
+
+            return (new CategoryResource($category))
+                ->toResponse($request)
+                ->setStatusCode(201);
         } catch (Throwable $e) {
-            Log::error('Failed to create category: ' . $e->getMessage());
+            Log::error('Failed to create category', [
+                'data' => $request->validated(),
+                'error' => $e->getMessage(),
+            ]);
 
             return response()->json([
-                'message' => 'Unable to create category.',
-                'error' => $e->getMessage(),
+                'message' => 'Fehler beim Erstellen der Kategorie.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Ein Fehler ist aufgetreten',
             ], 500);
         }
     }
 
     /**
      * Update the specified category.
-     *
-     * @param CategoryRequest $request
-     * @param Category $category
-     * @return JsonResponse
      */
-    public function update(CategoryRequest $request, Category $category): JsonResponse
+    public function update(CategoryRequest $request, $id): JsonResponse  // ✅ CategoryRequest
     {
         try {
-            $data = $request->validated();
-            $category->update($data);
+            $category = Category::find($id);
 
-            return (new CategoryResource($category))->toResponse($request);
+            if (!$category) {
+                return response()->json([
+                    'message' => 'Kategorie nicht gefunden.',
+                ], 404);
+            }
+
+            $data = $request->validated();
+
+            Log::info('Updating category', [
+                'id' => $id,
+                'data' => $data,
+            ]);
+
+            $category->update($data);
+            $category->load('product');
+
+            return (new CategoryResource($category->fresh()))->toResponse($request);
         } catch (Throwable $e) {
-            Log::error('Failed to update category: ' . $e->getMessage());
+            Log::error('Failed to update category', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
 
             return response()->json([
-                'message' => 'Unable to update category.',
-                'error' => $e->getMessage(),
+                'message' => 'Fehler beim Aktualisieren der Kategorie.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Ein Fehler ist aufgetreten',
             ], 500);
         }
     }
 
     /**
      * Remove the specified category.
-     *
-     * @param CategoryRequest $request
-     * @return JsonResponse
      */
-    public function destroy(Request $request, Category $category): JsonResponse
+    public function destroy(Request $request, $id): JsonResponse  // ✅ Request statt CategoryRequest
     {
         try {
+            $category = Category::find($id);
+
+            if (!$category) {
+                return response()->json([
+                    'message' => 'Kategorie nicht gefunden.',
+                ], 404);
+            }
+
             $category->delete();
 
             return response()->json([
-                'message' => 'Category deleted successfully.',
+                'message' => 'Kategorie erfolgreich gelöscht.',
             ], 200);
         } catch (Throwable $e) {
-            Log::error('Failed to delete category: ' . $e->getMessage());
+            Log::error('Failed to delete category', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
 
             return response()->json([
-                'message' => 'Unable to delete category.',
-                'error' => $e->getMessage(),
+                'message' => 'Fehler beim Löschen der Kategorie.',
+                'error' => config('app.debug') ? $e->getMessage() : 'Ein Fehler ist aufgetreten',
             ], 500);
         }
     }
