@@ -13,13 +13,13 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::factory()->create([
-            'name' => 'Acryl'
-        ]);
-        Category::factory()->create([
             'name' => 'Öl'
         ]);
         Category::factory()->create([
-            'name' => 'Skizzen'
+            'name' => 'Acryl'
+        ]);
+        Category::factory()->create([
+            'name' => 'Zeichnungen'
         ]);
         Category::factory()->create([
             'name' => 'Skulpturen'
