@@ -34,7 +34,7 @@ class ContactController extends Controller
             ], 422);
         }
 
-        $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        $response = Http::timeout(5)->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
             'secret'   => env('RECAPTCHA_SECRET_KEY'),
             'response' => $request->input('recaptcha_token'),
             'remoteip' => $request->ip(),
