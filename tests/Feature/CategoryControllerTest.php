@@ -118,7 +118,7 @@ class CategoryControllerTest extends TestCase
             ->deleteJson("/api/categories/{$category->id}");
 
         $response->assertOk()
-            ->assertJson(['message' => 'Category deleted successfully.']);
+            ->assertJson(['message' => 'Kategorie erfolgreich gelöscht.']);
 
         $this->assertSoftDeleted('categories', ['id' => $category->id]);
     }

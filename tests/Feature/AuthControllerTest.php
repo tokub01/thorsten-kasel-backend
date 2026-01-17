@@ -54,7 +54,7 @@ class AuthControllerTest extends TestCase
         $response->assertStatus(401)
             ->assertJson([
                 'success' => false,
-                'message' => 'Die eingegebenen Zugangsdaten sind ungültig.',
+                'message' => 'Die Anmeldung ist fehlgeschlagen. E-Mail oder Passwort ungültig.',
             ]);
     }
 

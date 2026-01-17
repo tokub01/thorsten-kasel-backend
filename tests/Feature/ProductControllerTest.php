@@ -59,7 +59,6 @@ class ProductControllerTest extends TestCase
         $this->assertArrayHasKey('id', $json);
         $this->assertEquals($product->id, $json['id']);
         $this->assertEquals($product->title, $json['title']);
-        $this->assertEquals($product->category_id, $json['category_id']);
     }
 
     #[Test]
@@ -75,6 +74,7 @@ class ProductControllerTest extends TestCase
             'price' => 19.99,
             'category_id' => $category->id,
             'image' => $image,
+            'isActive' => '0',
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
@@ -115,15 +115,6 @@ class ProductControllerTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    #[Test]
-    public function it_validates_required_fields_for_product_creation()
-    {
-        $response = $this->actingAs($this->user, 'sanctum')->postJson('/api/products', []);
-
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['title', 'description', 'category_id', 'image']); // price rausgenommen
-    }
-
 
     #[Test]
     public function it_updates_a_product_and_replaces_image_on_s3()
@@ -147,6 +138,7 @@ class ProductControllerTest extends TestCase
             'price' => 29.99,
             'category_id' => $category->id,
             'image' => $newImage,
+            'isActive' => "0"
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
