@@ -14,8 +14,49 @@ on:
         type: string
 
 env:
-  DEPLOYMENT_FOLDER: ./
-  
+    DEPLOYMENT_FOLDER: ./
+    APP_NAME: "Laravel"
+    APP_KEY: ${{ secrets.APP_KEY }}
+    APP_DEBUG: true
+    APP_URL: ${{ secrets.APP_URL }}
+    APP_LOCALE: de
+
+    # Database (IONOS Auto-Generated Secrets aus deinem Screenshot)
+    DB_CONNECTION: mysql
+    DB_HOST: ${{ secrets.DB_HOST }}
+    DB_PORT: 3306
+    DB_DATABASE: ${{ secrets.DB_NAME }}
+    DB_USERNAME: ${{ secrets.DB_USERNAME }}
+    DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+    # Mail (IONOS Auto-Generated Secrets)
+    MAIL_MAILER: smtp
+    MAIL_HOST: ${{ secrets.IONOS_MAIL_HOST }}
+    MAIL_PORT: ${{ secrets.IONOS_MAIL_PORT }}
+    MAIL_USERNAME: ${{ secrets.IONOS_MAIL_USERNAME }}
+    MAIL_PASSWORD: ${{ secrets.IONOS_MAIL_PASSWORD }}
+    MAIL_ENCRYPTION: ${{ secrets.IONOS_MAIL_ENCRYPTION }}
+    MAIL_FROM_ADDRESS: ${{ secrets.IONOS_MAIL_FROM_ADDRESS }}
+
+    # AWS S3 Storage
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+    AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
+    AWS_USE_PATH_STYLE_ENDPOINT: ${{secrets.AWS_USE_PATH_STYLE_ENDPOINT}}
+
+    # Services & Security
+    RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
+    RECAPTCHA_SECRET_KEY: ${{ secrets.RECAPTCHA_SECRET_KEY }}
+    ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+    FRONTEND_KEY: ${{ secrets.FRONTEND_KEY }}
+
+    # Infrastructure Drivers
+    SESSION_DRIVER: ${{secrets.SESSION_DRIVER}}
+    CACHE_STORE: ${{secrets.CACHE_STORE}}
+    QUEUE_CONNECTION: ${{secrets.QUEUE_CONNECTION}}
+    LOG_CHANNEL: ${{secrets.LOG_CANNEL}}
+
 
 jobs:
 # Please do not rename this job
