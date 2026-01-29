@@ -57,9 +57,9 @@ deploy:
       - find $(pwd) -type f -not -path "$(pwd)/logs/*" -exec chmod 664 {} \;
       - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
       - chmod -R o+w storage bootstrap/cache
+      - php artisan key:generate
       - rm -f storage/logs/laravel.log
       - rm -f bootstrap/cache/config.php
-      - php artisan key:generate
       - php artisan config:clear
       - php artisan migrate:fresh --seed
       - php artisan storage:link
