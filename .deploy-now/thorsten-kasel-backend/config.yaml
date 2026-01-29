@@ -82,8 +82,8 @@ deploy:
       - rm -f storage/logs/laravel.log
       - rm -f bootstrap/cache/config.php
       # Wir löschen den Config-Cache zuerst
-      - php artisan config:clear
+      #- php artisan config:clear
       # Falls cache:clear immer noch sqlite sucht, erzwingen wir mysql per Umgebungsvariable im Befehl:
-      - php artisan cache:clear
+      #- php artisan cache:clear
       # Datenbank-Migration
       - php artisan up
