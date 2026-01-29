@@ -84,7 +84,7 @@ deploy:
       # Wir löschen den Config-Cache zuerst
       - php artisan config:clear
       # Falls cache:clear immer noch sqlite sucht, erzwingen wir mysql per Umgebungsvariable im Befehl:
-      - DB_CONNECTION=mysql php artisan cache:clear
+      - php artisan cache:clear
       # Datenbank-Migration
       - php artisan migrate:fresh --seed
       - php artisan storage:link
