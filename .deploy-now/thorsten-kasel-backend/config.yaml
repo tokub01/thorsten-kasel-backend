@@ -13,7 +13,7 @@ deploy:
 
     # Database (IONOS Auto-Generated Secrets aus deinem Screenshot)
     DB_CONNECTION: mysql
-    DB_HOST: ${{ secrets.IONOS_DEPLOYMENT_911A3DDB_F0C6_4DCD_ACC2_8F57FCD541FB_DB_HOST }}
+    DB_HOST: ${{ secrets.DB_HOST }}
     DB_PORT: 3306
     DB_DATABASE: ${{ secrets.DB_NAME }}
     DB_USERNAME: ${{ secrets.DB_USERNAME }}
@@ -31,9 +31,9 @@ deploy:
     # AWS S3 Storage
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    AWS_DEFAULT_REGION: eu-central-1
-    AWS_BUCKET: kasel-images
-    AWS_USE_PATH_STYLE_ENDPOINT: false
+    AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+    AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
+    AWS_USE_PATH_STYLE_ENDPOINT: ${{secrets.AWS_USE_PATH_STYLE_ENDPOINT}}
 
     # Services & Security
     RECAPTCHA_SITE_KEY: ${{ secrets.RECAPTCHA_SITE_KEY }}
@@ -42,10 +42,10 @@ deploy:
     FRONTEND_KEY: ${{ secrets.FRONTEND_KEY }}
 
     # Infrastructure Drivers
-    SESSION_DRIVER: database
-    CACHE_STORE: database
-    QUEUE_CONNECTION: database
-    LOG_CHANNEL: stack
+    SESSION_DRIVER: ${{secrets.SESSION_DRIVER}}
+    CACHE_STORE: ${{secrets.CACHE_STORE}}
+    QUEUE_CONNECTION: ${{secrets.QUEUE_CONNECTION}}
+    LOG_CHANNEL: ${{secrets.LOG_CANNEL}}
 
   bootstrap:
     excludes:
