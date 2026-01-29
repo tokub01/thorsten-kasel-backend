@@ -1,27 +1,14 @@
-# To better understand this file read this:
-# https://docs.ionos.space/docs/github-actions-customization/
+version: 1.0
 
-name: "Deploy Now: Execute Build"
-
-on:
-  workflow_call:
-    inputs:
-      site-url:
-        required: true
-        type: string
-      branch-id:
-        required: true
-        type: string
-
-env:
-    DEPLOYMENT_FOLDER: ./
+deploy:
+  env-vars:
     APP_NAME: "Laravel"
     APP_KEY: ${{ secrets.APP_KEY }}
     APP_DEBUG: true
     APP_URL: ${{ secrets.APP_URL }}
     APP_LOCALE: de
 
-    # Database (IONOS Auto-Generated Secrets aus deinem Screenshot)
+    # Database
     DB_CONNECTION: mysql
     DB_HOST: ${{ secrets.DB_HOST }}
     DB_PORT: 3306
@@ -29,7 +16,7 @@ env:
     DB_USERNAME: ${{ secrets.DB_USERNAME }}
     DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
-    # Mail (IONOS Auto-Generated Secrets)
+    # Mail
     MAIL_MAILER: smtp
     MAIL_HOST: ${{ secrets.IONOS_MAIL_HOST }}
     MAIL_PORT: ${{ secrets.IONOS_MAIL_PORT }}
@@ -55,74 +42,49 @@ env:
     SESSION_DRIVER: ${{secrets.SESSION_DRIVER}}
     CACHE_STORE: ${{secrets.CACHE_STORE}}
     QUEUE_CONNECTION: ${{secrets.QUEUE_CONNECTION}}
-    LOG_CHANNEL: ${{secrets.LOG_CANNEL}}
+    LOG_CHANNEL: ${{secrets.LOG_CHANNEL}}
 
+  bootstrap:
+    excludes:
+      - .env
+      - tests
+      - node_modules
+      - DOCKER_ENV
+      - docker_tag
+      - output.log
+    post-deployment-remote-commands:
+      - find $(pwd) -type f -not -path "$(pwd)/logs/*" -exec chmod 664 {} \;
+      - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
+      - chmod -R o+w storage bootstrap/cache
+      - rm -f storage/logs/laravel.log
+      - rm -f bootstrap/cache/config.php
+      - php artisan config:clear
+      - php artisan migrate:fresh --seed
+      - php artisan storage:link
+      - php artisan optimize
 
-jobs:
-# Please do not rename this job
-  build-project:
-    name: build thorsten-kasel-backend
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      # if you add permissions here this needs to be done in the thorsten-kasel-backend-orchestration.yaml as well
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-
-      - name: Render templates
-        uses: ionos-deploy-now/template-renderer-action@v2
-        id: template
-        with:
-          input-directory: .deploy-now/thorsten-kasel-backend
-          output-directory: ${{ env.DEPLOYMENT_FOLDER }}
-          intermediate-data-file: ${{ env.DEPLOYMENT_FOLDER }}/.template-renderer-data
-
-      - name: Setup composer
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          tools: composer:2
-
-      - name: Run composer install
-# uncomment the following lines if you want to add environment variables for this step
-#        env:
-#          MY_ENV_VAR: value-for-my-env-var
-#          MY_SECRET_ENV_VAR: ${{ secrets.MY_SECRET }} # here you can find information how to create secrets: https://docs.github.com/en/actions/security-guides/encrypted-secrets
-        run: composer install --optimize-autoloader --no-dev
-
-      #- name: Build PHP assets
-# uncomment the following lines if you want to add environment variables for this step
-       #env:
-       #   MY_ENV_VAR: APP_KEY
-       #   MY_SECRET_ENV_VAR: ${{ secrets.APP_KEY }} # here you can find information how to create secrets: https://docs.github.com/en/actions/security-guides/encrypted-secrets
-       # run: php artisan key:generate --force -n
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: v22.x
-
-      - name: Build Node assets
-        env:
-          CI: true
-          SITE_URL: ${{ inputs.site-url }}
-        run: |
-          npm ci
-          npm run build
-
-# Please do not touch the following action
-      - name: Store deployment content
-        uses: ionos-deploy-now/artifact-action@v1
-        with:
-          api-key: ${{ secrets.IONOS_API_KEY }}
-          service-host: api-eu.ionos.space
-          project-id: d7a472a4-a431-4e42-8c28-e1fc7eb855b9
-          branch-id: ${{ inputs.branch-id }}
-          version: ${{ github.sha }}
-          folder: ${{ env.DEPLOYMENT_FOLDER }}
-          config-file: .deploy-now/thorsten-kasel-backend/config.yaml
-          action: upload
+  recurring:
+    excludes:
+      - .env
+      - tests
+      - node_modules
+      - DOCKER_ENV
+      - docker_tag
+      - output.log
+      - storage
+    pre-deployment-remote-commands:
+      - php artisan down
+    post-deployment-remote-commands:
+      - find $(pwd) -type f -not -path "$(pwd)/logs/*" -exec chmod 664 {} \;
+      - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
+      - chmod -R o+w storage bootstrap/cache
+      - rm -f storage/logs/laravel.log
+      - rm -f bootstrap/cache/config.php
+      # WICHTIG: Erst Config löschen
+      - php artisan config:clear
+      # Dann Cache löschen, aber MySQL erzwingen falls Fallback auf SQLite droht
+      - php artisan cache:clear || true
+      - php artisan migrate:fresh --seed
+      - php artisan storage:link
+      - php artisan view:cache
+      - php artisan up
