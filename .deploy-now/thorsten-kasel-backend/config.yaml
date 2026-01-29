@@ -83,6 +83,6 @@ deploy:
       - rm -f storage/logs/laravel.log
       - rm -f bootstrap/cache/config.php
       - php artisan config:clear
-      - php artisan migrate:fresh --seed
+      - php artisan migrate:fresh --seed --force
       - php artisan storage:link
       - php artisan optimize
