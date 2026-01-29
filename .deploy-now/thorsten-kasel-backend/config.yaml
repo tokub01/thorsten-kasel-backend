@@ -27,7 +27,6 @@ deploy:
     MAIL_PASSWORD: ${{ secrets.IONOS_MAIL_PASSWORD }}
     MAIL_ENCRYPTION: ${{ secrets.IONOS_MAIL_ENCRYPTION }}
     MAIL_FROM_ADDRESS: ${{ secrets.IONOS_MAIL_FROM_ADDRESS }}
-    MAIL_FROM_NAME: "Tobias Kubina"
 
     # AWS S3 Storage
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
