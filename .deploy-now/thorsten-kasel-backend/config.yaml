@@ -82,4 +82,7 @@ deploy:
       - php artisan storage:link
       - php artisan optimize
       - rm -rf storage/logs/laravel.log
+      - rm -f bootstrap/cache/config.php
+      - php artisan config:clear
+      - php artisan clear-compiled
       - php artisan up
