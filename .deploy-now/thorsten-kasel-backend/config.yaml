@@ -79,12 +79,13 @@ deploy:
       - find $(pwd) -type f -not -path "$(pwd)/logs/*" -exec chmod 664 {} \;
       - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
       - chmod -R o+w storage bootstrap/cache
-      # Log löschen
       - rm -f storage/logs/laravel.log
-      # Cache radikal löschen
       - rm -f bootstrap/cache/config.php
+      # Wir löschen den Config-Cache zuerst
       - php artisan config:clear
-      - php artisan cache:clear
+      # Falls cache:clear immer noch sqlite sucht, erzwingen wir mysql per Umgebungsvariable im Befehl:
+      - DB_CONNECTION=mysql php artisan cache:clear
+      # Datenbank-Migration
       - php artisan migrate:fresh --seed
       - php artisan storage:link
       - php artisan view:cache
