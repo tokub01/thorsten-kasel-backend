@@ -1,54 +1,79 @@
 version: 1.0
 
 deploy:
-  # configuration part, which is taken at the FIRST deployment of each branch
+  env-vars:
+    # App Settings
+    APP_NAME: "Laravel"
+    APP_ENV: production
+    APP_KEY: ${{ secrets.IONOS_API_KEY }} # Falls dies dein Laravel Key ist, sonst neu anlegen
+    APP_DEBUG: false
+    APP_URL: https://deine-domain.de # Hier deine echte IONOS URL eintragen
+
+    # Database - Hier nutzen wir deine spezifischen IONOS-Secrets vom Screenshot
+    DB_CONNECTION: mysql
+    DB_HOST: ${{ secrets.IONOS_DEPLOYMENT_911A3DDB_F0C6_4DCD_ACC2_8F57FCD541FB_DB_HOST }}
+    DB_PORT: 3306
+    DB_DATABASE: ${{ secrets.IONOS_DEPLOYMENT_911A3DDB_F0C6_4DCD_ACC2_8F57FCD541FB_DB_NAME }}
+    DB_USERNAME: ${{ secrets.IONOS_DEPLOYMENT_911A3DDB_F0C6_4DCD_ACC2_8F57FCD541FB_DB_USERNAME }}
+    DB_PASSWORD: ${{ secrets.IONOS_DEPLOYMENT_911A3DDB_F0C6_4DCD_ACC2_8F57FCD541FB_DB_PASSWORD }}
+
+    # Mail - Nutzt deine IONOS Mail Secrets vom Screenshot
+    MAIL_MAILER: smtp
+    MAIL_HOST: ${{ secrets.IONOS_MAIL_HOST }}
+    MAIL_PORT: ${{ secrets.IONOS_MAIL_PORT }}
+    MAIL_USERNAME: ${{ secrets.IONOS_MAIL_USERNAME }}
+    MAIL_PASSWORD: ${{ secrets.IONOS_MAIL_PASSWORD }}
+    MAIL_ENCRYPTION: ${{ secrets.IONOS_MAIL_ENCRYPTION }}
+    MAIL_FROM_ADDRESS: ${{ secrets.IONOS_MAIL_FROM_ADDRESS }}
+    MAIL_FROM_NAME: "Tobias Kubina"
+
+    # AWS & Services (Werte aus deiner Vorlage)
+    AWS_ACCESS_KEY_ID: AKIA4UBBK4DWG7SP6HUZ
+    AWS_SECRET_ACCESS_KEY: 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
+    AWS_DEFAULT_REGION: eu-central-1
+    AWS_BUCKET: kasel-images
+
+    RECAPTCHA_SITE_KEY: 6Lcpy0wsAAAAAHxURCD3v8uNQpk7ZTovpir9bqx0
+    RECAPTCHA_SECRET_KEY: 6Lcpy0wsAAAAAMcpX_4haiCuZjRvB7UXkWHkuDt7
+
+    # Infrastructure
+    SESSION_DRIVER: database
+    CACHE_STORE: database
+    QUEUE_CONNECTION: database
+    LOG_CHANNEL: stack
+
   bootstrap:
-    # folders that are not copied to IONOS webspace
     excludes:
+      - .env
       - tests
       - node_modules
       - DOCKER_ENV
       - docker_tag
       - output.log
-    # commands that are executed at the real webspace NOT at build servers AFTER copying new files
     post-deployment-remote-commands:
       - find $(pwd) -type f -not -path "$(pwd)/logs/*" -exec chmod 664 {} \;
       - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
       - chmod -R o+w storage bootstrap/cache
       - php artisan migrate --force
-      - php artisan optimize:clear
-      - php artisan migrate --force -n
       - php artisan storage:link
       - php artisan optimize
-      - php artisan up
 
-  # configuration part, which is taken at ALL FURTHER deployments of this branch
   recurring:
-    # folders that are not copied to IONOS webspace
     excludes:
+      - .env
       - tests
       - node_modules
       - DOCKER_ENV
       - docker_tag
       - output.log
       - storage
-    # commands that are executed at the real webspace NOT at build servers BEFORE copying new files
     pre-deployment-remote-commands:
       - php artisan down
-    # commands that are executed at the real webspace NOT at build servers AFTER copying new files
     post-deployment-remote-commands:
       - find $(pwd) -type f -not -path "$(pwd)/logs/*" -exec chmod 664 {} \;
       - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
       - chmod -R o+w storage bootstrap/cache
       - php artisan migrate --force
-      - php artisan optimize:clear
-      - php artisan migrate --force -n
       - php artisan storage:link
       - php artisan optimize
       - php artisan up
-
-# uncomment the following lines to configure cron jobs
-#runtime:
-#  cron-jobs:
-#    - command: my-cron-job-command # the deployment is located at $HOME/htdocs/ to execute a deployed script just prefix it accordingly
-#      schedule: 0 5 * * * # run every day at 5:00
