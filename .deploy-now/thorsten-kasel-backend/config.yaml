@@ -81,5 +81,4 @@ deploy:
       - php artisan migrate --force
       - php artisan storage:link
       - php artisan optimize
-      - php artisan key:generate
       - php artisan up
