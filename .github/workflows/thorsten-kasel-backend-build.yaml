@@ -88,7 +88,7 @@ jobs:
           SESSION_LIFETIME: 120
           SESSION_PATH: /
           VITE_APP_NAME: "${APP_NAME}"
-        run: composer install --optimize-autoloader --no-dev
+        run: composer install --optimize-autoloader 
 
       - name: Build PHP assets
         env:
