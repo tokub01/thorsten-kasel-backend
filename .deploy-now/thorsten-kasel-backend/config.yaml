@@ -41,6 +41,7 @@ deploy:
       - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
       - chmod -R o+w storage bootstrap/cache
       - rm -rf storage/logs/laravel.log
+      - touch storage/logs/laravel.log
       - php artisan optimize:clear
       - php artisan migrate:fresh --seed --force
       - php artisan storage:link
