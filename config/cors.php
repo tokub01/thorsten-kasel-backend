@@ -25,7 +25,9 @@ return [
         'http://thorstenkasel.de',
         'https://thorstenkasel.de',
         'https://www.thorstenkasel.de',
-        'http://www.thorstenkasel.de'
+        'http://www.thorstenkasel.de',
+        'http://home-5019512344.app-ionos.space',
+        'https://home-5019512344.app-ionos.space',
     ],
 
     'allowed_origins_patterns' => [],
