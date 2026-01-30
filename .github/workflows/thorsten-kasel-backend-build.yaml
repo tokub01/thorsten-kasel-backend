@@ -45,7 +45,7 @@ jobs:
           php-version: '8.2'
           tools: composer:2
 
-- name: Run composer update
+      - name: Run composer update
         env:
           ADMIN_PASSWORD: test1234
           APP_DEBUG: true
