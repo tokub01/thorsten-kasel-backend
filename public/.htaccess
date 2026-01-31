@@ -1,26 +1,40 @@
+# ----------------------------------------------------------------------
+# Vue.js SPA Apache Konfiguration
+# ----------------------------------------------------------------------
+
 <IfModule mod_rewrite.c>
-    RewriteBase /
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
     RewriteEngine On
+    RewriteBase /
 
-    # Handle Authorization Header
+    # 1. Header-Fix für Authorization (wichtig für APIs/JWT)
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Handle X-XSRF-Token Header
-    RewriteCond %{HTTP:x-xsrf-token} .
-    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
-
-    # Redirect Trailing Slashes If Not A Folder...
+    # 2. Trailing Slash entfernen (außer bei echten Ordnern)
+    # Verhindert Duplicate Content und Routing-Probleme
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
+    # 3. Das SPA-Herzstück: Das "Catch-All" Routing
+    # Wenn die Anfrage keine reale Datei (-f) oder kein Ordner (-d) ist...
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # ...leite alles an die index.html weiter.
+    # Der Vue-Router übernimmt ab hier den Pfad.
+    RewriteRule . /index.html [L]
+</IfModule>
+
+# 4. Sicherheit & Performance
+<IfModule mod_negotiation.c>
+    # Deaktiviert MultiViews (verhindert, dass Apache nach ähnlichen Dateinamen sucht)
+    Options -MultiViews -Indexes
+</IfModule>
+
+# Optional: Cache-Control für statische Assets (empfohlen)
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
+    ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
