@@ -44,7 +44,7 @@ deploy:
       - touch storage/logs/laravel.log
       - php artisan optimize:clear
       - php artisan config:clear
-      - php artisan migrate --force
+      - php artisan migrate:fresh --seed --force
       - php artisan storage:link
       - php artisan optimize
       - php artisan up
