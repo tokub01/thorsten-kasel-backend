@@ -35,7 +35,7 @@ class ContactController extends Controller
         }
 
         $response = Http::timeout(5)->asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-            'secret'   => env('RECAPTCHA_SECRET_KEY'),
+            'secret'   =>  config('services.recaptcha.secret_key'),
             'response' => $request->input('recaptcha_token'),
             'remoteip' => $request->ip(),
         ]);
@@ -72,7 +72,7 @@ class ContactController extends Controller
             'token' => $token,
         ]);
 
-        Mail::to($request->email)->send(new ContactVerificationMail(env('FRONTEND_KEY').'/verifyContact/' . $token));
+        Mail::to($request->email)->send(new ContactVerificationMail(config('services.frontend.key') .'/verifyContact/' . $token));
 
         return response()->json([
             'success' => true,
@@ -126,10 +126,10 @@ class ContactController extends Controller
         try {
             return response()->json([
                 "success" => true,
-                "message" => "Kontaktaanfragen erfolgreich geladen",
+                "message" => "Kontaktanfragen erfolgreich geladen",
                 "data" =>   ContactRequest::all(),
             ]);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to fetch products: ' . $e->getMessage());
 
             return response()->json([
