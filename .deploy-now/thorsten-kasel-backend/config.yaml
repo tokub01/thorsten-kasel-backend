@@ -19,7 +19,6 @@ deploy:
       - php artisan db:seed
       - php artisan optimize:clear
       - php artisan storage:link
-      - php artisan optimize
       - php artisan up
 
   # configuration part, which is taken at ALL FURTHER deployments of this branch
@@ -43,10 +42,8 @@ deploy:
       - rm -rf storage/logs/laravel.log
       - touch storage/logs/laravel.log
       - php artisan optimize:clear
-      - php artisan config:clear
       - php artisan migrate:fresh --seed --force
       - php artisan storage:link
-      - php artisan optimize
       - php artisan up
 
 # uncomment the following lines to configure cron jobs
