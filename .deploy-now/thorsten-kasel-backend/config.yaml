@@ -33,14 +33,13 @@ deploy:
       - storage
     # commands that are executed at the real webspace NOT at build servers BEFORE copying new files
     pre-deployment-remote-commands:
+      - rm -rf .env
       - php artisan down
     # commands that are executed at the real webspace NOT at build servers AFTER copying new files
     post-deployment-remote-commands:
       - find $(pwd) -type f -not -path "$(pwd)/logs/*" -exec chmod 664 {} \;
       - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
       - chmod -R o+w storage bootstrap/cache
-      - rm -rf storage/logs/laravel.log
-      - touch storage/logs/laravel.log
       - php artisan optimize:clear
       - php artisan migrate:fresh --seed --force
       - php artisan storage:link
