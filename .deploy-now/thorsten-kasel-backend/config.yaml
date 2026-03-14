@@ -15,8 +15,7 @@ deploy:
       - find $(pwd) -type f -not -path "$(pwd)/logs/*" -exec chmod 664 {} \;
       - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
       - chmod -R o+w storage bootstrap/cache
-      - php artisan migrate:fresh --force
-      - php artisan db:seed --force
+      - php artisan migrate:fresh --seed --force
       - php artisan optimize:clear
       - php artisan storage:link
       - php artisan up
@@ -41,8 +40,7 @@ deploy:
       - find $(pwd) -type d -not -name "logs" -exec chmod 775 {} \;
       - chmod -R o+w storage bootstrap/cache
       - php artisan optimize:clear
-      - php artisan migrate:fresh --force
-      - php artisan db:seed --force
+      - php artisan migrate:fresh --seed --force
       - php artisan storage:link
       - php artisan up
 
